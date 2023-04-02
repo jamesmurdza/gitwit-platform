@@ -11,10 +11,13 @@ type LoginFormProps = {
 
 export const GitHubLoginForm = (props: LoginFormProps) => {
   const [user, setUser] = useState<null | User>(null)
+  const [token, setToken] = useState<null | string>(null)
   const fetchUserData = () => {
     const fetch = async () => {
       const response = await supabase.auth.getUser()
+      const session = await supabase.auth.getSession()
       setUser(response.data.user)
+      setToken(session.data.session?.provider_token!)
     }
     fetch().catch((error) => console.log(error.message))
   }
@@ -36,7 +39,7 @@ export const GitHubLoginForm = (props: LoginFormProps) => {
   return (
     <div>
       <div style={{ marginTop: "1rem" }}>
-        {user ? (
+        {token ? (
           <>
             {props.children}
             <div style={{ textAlign: "center", marginTop: "60px" }}>
