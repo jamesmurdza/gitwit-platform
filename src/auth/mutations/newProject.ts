@@ -1,3 +1,5 @@
+import { Project } from "lib/gitwit"
+
 async function sleep(duration: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -23,6 +25,8 @@ export default async function newProject({ description, repositoryName, token },
       error: user.message,
     }
   }
-  await sleep(1)
-  return { repositoryURL: `https://github.com/${user.login}/${repositoryName}` }
+  let project = new Project(repositoryName, description)
+  let { completion } = await project.getCompletion()
+  let { buildScript, buildLog, repositoryURL } = await project.buildAndPush(user.login)
+  return { repositoryURL }
 }
