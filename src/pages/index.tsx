@@ -6,11 +6,15 @@ import newProject from "src/auth/mutations/newProject"
 import { useMutation } from "@blitzjs/rpc"
 import { supabase } from "src/utils/supabase"
 
+type Project = {
+  repositoryURL: string
+}
+
 const Home: BlitzPage = () => {
   let [description, setDescription] = useState("")
   let [repositoryName, setRepositoryName] = useState("")
   let [repositoryNameEdited, setRepositoryNameEdited] = useState(false)
-  let [project, setProject] = useState<{ repositoryURL: string } | null>(null)
+  let [project, setProject] = useState<Project | null>(null)
   const [newProjectMutation, { isLoading }] = useMutation(newProject)
 
   const createProject = async (event) => {
@@ -23,7 +27,11 @@ const Home: BlitzPage = () => {
       repositoryName,
       token: session.data.session?.provider_token,
     })
-    setProject(newProject)
+    if (newProject.repositoryURL === undefined) {
+      window.location.reload()
+    } else {
+      setProject(newProject)
+    }
   }
 
   return (

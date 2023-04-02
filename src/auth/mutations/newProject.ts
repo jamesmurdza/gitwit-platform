@@ -17,7 +17,12 @@ const getUserData = async (token) => {
 }
 
 export default async function newProject({ description, repositoryName, token }, ctx) {
-  const username = (await getUserData(token)).login
+  const user = await getUserData(token)
+  if (user.login === undefined) {
+    return {
+      error: user.message,
+    }
+  }
   await sleep(1)
-  return { repositoryURL: `https://github.com/${username}/${repositoryName}` }
+  return { repositoryURL: `https://github.com/${user.login}/${repositoryName}` }
 }
