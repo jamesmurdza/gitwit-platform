@@ -15,6 +15,8 @@ const Home: BlitzPage = () => {
 
   const createProject = async (event) => {
     event.preventDefault()
+    if (description === "") return
+
     const session = await supabase.auth.getSession()
     let newProject = await newProjectMutation({
       description,
@@ -44,7 +46,15 @@ const Home: BlitzPage = () => {
                   {project.repositoryURL}
                 </a>
               </p>
-              <button onClick={() => setProject(null)}>🛠️ Make another project</button>
+              <button
+                onClick={() => {
+                  setProject(null)
+                  setDescription("")
+                  setRepositoryName("")
+                }}
+              >
+                🛠️ Make another project
+              </button>
             </div>
           ) : (
             <form onSubmit={createProject}>
