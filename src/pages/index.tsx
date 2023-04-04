@@ -75,7 +75,7 @@ const Home: BlitzPage = () => {
                   if (!repositoryNameEdited) {
                     let respositoryName = input
                       .toLocaleLowerCase()
-                      .replaceAll(/[^A-Za-z0-9 ]/g, "")
+                      .replace(/[^A-Za-z0-9 ]/g, "")
                       .split(" ")
                       .filter((word) => word !== "a" && word !== "an" && word !== "the")
                       .filter((word) => word !== "")
