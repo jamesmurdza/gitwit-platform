@@ -21,9 +21,7 @@ const getUserData = async (token) => {
 export default async function newProject({ description, repositoryName, token }, ctx) {
   const user = await getUserData(token)
   if (user.login === undefined) {
-    return {
-      error: user.message,
-    }
+    console.log(user.message)
   }
   let project = new Project(repositoryName, description)
   let { completion } = await project.getCompletion()

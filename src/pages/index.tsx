@@ -22,7 +22,7 @@ const Home: BlitzPage = () => {
     if (description === "") return
 
     const session = await supabase.auth.getSession()
-    let newProject = await newProjectMutation({
+    let newProject: Project = await newProjectMutation({
       description,
       repositoryName,
       token: session.data.session?.provider_token,
