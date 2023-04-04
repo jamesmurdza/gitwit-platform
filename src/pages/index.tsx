@@ -15,6 +15,7 @@ const Home: BlitzPage = () => {
   let [repositoryName, setRepositoryName] = useState("")
   let [repositoryNameEdited, setRepositoryNameEdited] = useState(false)
   let [project, setProject] = useState<Project | null>(null)
+  let [error, setError] = useState<string | null>(null)
   const [newProjectMutation, { isLoading }] = useMutation(newProject)
 
   const createProject = async (event) => {
@@ -22,15 +23,17 @@ const Home: BlitzPage = () => {
     if (description === "") return
 
     const session = await supabase.auth.getSession()
-    let newProject: Project = await newProjectMutation({
-      description,
-      repositoryName,
-      token: session.data.session?.provider_token,
-    })
-    if (newProject.repositoryURL === undefined) {
-      window.location.reload()
-    } else {
+    try {
+      let newProject: Project = await newProjectMutation({
+        description,
+        repositoryName,
+        token: session.data.session?.provider_token,
+      })
+      console.log(newProject)
       setProject(newProject)
+      setError(null)
+    } catch (error) {
+      setError(error.toString())
     }
   }
 
@@ -45,7 +48,7 @@ const Home: BlitzPage = () => {
               <br />
               This could take up to two minutes.
             </div>
-          ) : project ? (
+          ) : project && project.repositoryURL ? (
             <div style={{ textAlign: "center" }}>
               <p>
                 Your codebase is available at the following URL:
@@ -66,6 +69,19 @@ const Home: BlitzPage = () => {
             </div>
           ) : (
             <form onSubmit={createProject}>
+              {error && (
+                <div
+                  style={{
+                    marginBottom: "25px",
+                    background: "#ff8888",
+                    color: "black",
+                    padding: "15px",
+                    borderRadius: "var(--border-radius)",
+                  }}
+                >
+                  {error}
+                </div>
+              )}
               <textarea
                 placeholder="A cookbook web app using React and Tailwind..."
                 style={{ fontSize: "x-large" }}
