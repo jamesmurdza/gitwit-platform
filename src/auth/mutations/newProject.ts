@@ -23,7 +23,7 @@ export default async function newProject({ description, repositoryName, token },
   if (user.login === undefined) {
     console.log(user.message)
   }
-  let project = new Project(repositoryName, description)
+  let project = new Project(repositoryName, description, user.login)
   let { completion } = await project.getCompletion()
   let { buildScript, buildLog, repositoryURL } = await project.buildAndPush(user.login)
   return { repositoryURL }
