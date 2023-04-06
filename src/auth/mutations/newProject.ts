@@ -21,8 +21,9 @@ const getUserData = async (token) => {
 export default async function newProject({ description, repositoryName, token }, ctx) {
   const user = await getUserData(token)
   if (user.login === undefined) {
-    console.log(user.message)
+    throw new Error(`${user.message}. Try logging out and back in.`)
   }
+
   let project = new Project(repositoryName, description, user.login)
   let { completion } = await project.getCompletion()
   let { buildScript, buildLog, repositoryURL } = await project.buildAndPush(user.login)
