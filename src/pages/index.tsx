@@ -57,15 +57,27 @@ const Home: BlitzPage = () => {
                   {project.repositoryURL}
                 </a>
               </p>
-              <button
-                onClick={() => {
-                  setProject(null)
-                  setDescription("")
-                  setRepositoryName("")
-                }}
-              >
-                🛠️ Make another project
-              </button>
+              <div style={{ display: "flex", flexDirection: "row", marginTop: "50px" }}>
+                <button
+                  onClick={() => {
+                    setProject(null)
+                  }}
+                  style={{ marginRight: "5px" }}
+                  className="secondary"
+                >
+                  ✏️ Re-generate
+                </button>
+                <button
+                  onClick={() => {
+                    setProject(null)
+                    setDescription("")
+                    setRepositoryName("")
+                  }}
+                  style={{ marginLeft: "5px" }}
+                >
+                  🛠️ Make another project
+                </button>
+              </div>
             </div>
           ) : (
             <form onSubmit={createProject}>
