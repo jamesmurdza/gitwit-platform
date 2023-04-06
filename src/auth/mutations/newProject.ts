@@ -31,7 +31,7 @@ export default async function newProject({ description, repositoryName, token },
   }
 
   let project = new Project(repositoryName, description, user.login)
-  let { completion } = await project.getCompletion()
+  let completion = await project.getCompletion()
   let { buildScript, buildLog, repositoryURL } = await project.buildAndPush(user.login)
   return { repositoryURL }
 }
