@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react"
 import Image from "next/image"
 import { User } from "@supabase/supabase-js"
 import { ReactNode } from "react"
+import { useMutation } from "@blitzjs/rpc"
+import queryInvites from "src/mutations/queryInvites"
 
 type LoginFormProps = {
   children?: ReactNode
@@ -12,16 +14,22 @@ type LoginFormProps = {
 export const GitHubLoginForm = (props: LoginFormProps) => {
   const [user, setUser] = useState<null | User>(null)
   const [token, setToken] = useState<null | string>(null)
+  const [invited, setInvited] = useState(false)
+  const [userExists] = useMutation(queryInvites)
+
   const fetchUserData = () => {
     const fetch = async () => {
       const response = await supabase.auth.getUser()
       const session = await supabase.auth.getSession()
+      const username = response.data.user?.user_metadata.preferred_username
+
       setUser(response.data.user)
+      setInvited(await userExists({ username }))
       setToken(session.data.session?.provider_token!)
     }
     fetch().catch((error) => console.log(error.message))
   }
-  useEffect(fetchUserData, [])
+  useEffect(fetchUserData, [userExists])
 
   const signInWithGitHub = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -41,7 +49,15 @@ export const GitHubLoginForm = (props: LoginFormProps) => {
       <div style={{ marginTop: "1rem" }}>
         {token ? (
           <>
-            {props.children}
+            {invited ? (
+              props.children
+            ) : (
+              <div>
+                GitWit is currently in closed beta. To have your GitHub account added to the list of
+                beta testers, please contact us at{" "}
+                <a href="mailto:contact@gitwit.dev">contact@gitwit.dev</a>.
+              </div>
+            )}
             <div style={{ textAlign: "center", marginTop: "60px" }}>
               <Image
                 src={user?.user_metadata.avatar_url}

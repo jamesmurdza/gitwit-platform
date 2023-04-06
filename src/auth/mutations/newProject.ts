@@ -1,4 +1,5 @@
 import { Project } from "lib/gitwit"
+import queryInvites from "src/mutations/queryInvites"
 
 async function sleep(duration: number): Promise<void> {
   return new Promise((resolve) => {
@@ -22,6 +23,11 @@ export default async function newProject({ description, repositoryName, token },
   const user = await getUserData(token)
   if (user.login === undefined) {
     throw new Error(`${user.message}. Try logging out and back in.`)
+  }
+
+  const userExists = await queryInvites({ username: user.login }, ctx);
+  if (!userExists) {
+    throw new Error("You must be invited to use this service.")
   }
 
   let project = new Project(repositoryName, description, user.login)
