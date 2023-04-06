@@ -44,9 +44,12 @@ const Home: BlitzPage = () => {
         <GitHubLoginForm>
           {isLoading ? (
             <div style={{ textAlign: "center" }}>
-              Generating your codebase.
+              <progress
+                style={{ width: "50%", marginBottom: "20px", animationDuration: "2s" }}
+                max="100"
+              />
               <br />
-              This could take up to two minutes.
+              Generating your codebase. This typically takes 1-3 minutes.
             </div>
           ) : project && project.repositoryURL ? (
             <div style={{ textAlign: "center" }}>
