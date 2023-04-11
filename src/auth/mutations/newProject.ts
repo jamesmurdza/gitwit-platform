@@ -19,7 +19,7 @@ const getUserData = async (token) => {
   ).json()
 }
 
-export default async function newProject({ description, repositoryName, token }, ctx) {
+export default async function newProject({ description, repositoryName, newBranchName, token }, ctx) {
   const user = await getUserData(token)
   if (user.login === undefined) {
     throw new Error(`${user.message}. Try logging out and back in.`)
@@ -30,8 +30,12 @@ export default async function newProject({ description, repositoryName, token },
     throw new Error("You must be invited to use this service.")
   }
 
-  let project = new Project(repositoryName, description, user.login)
-  let completion = await project.getCompletion()
-  let { buildScript, buildLog, repositoryURL } = await project.buildAndPush(user.login)
-  return { repositoryURL }
+  let project = new Project({
+    name: repositoryName,
+    description: description,
+    user: user.login,
+    branchName: newBranchName
+  })
+  let { buildScript, buildLog, repositoryURL, branchURL } = await project.buildAndPush()
+  return { repositoryURL, branchURL, repositoryName }
 }

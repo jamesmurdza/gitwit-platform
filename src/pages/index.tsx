@@ -7,7 +7,9 @@ import { useMutation } from "@blitzjs/rpc"
 import { supabase } from "src/utils/supabase"
 
 type Project = {
-  repositoryURL: string
+  repositoryURL?: string
+  branchURL?: string
+  repositoryName?: string
 }
 
 const Home: BlitzPage = () => {
@@ -15,6 +17,7 @@ const Home: BlitzPage = () => {
   let [repositoryName, setRepositoryName] = useState("")
   let [repositoryNameEdited, setRepositoryNameEdited] = useState(false)
   let [project, setProject] = useState<Project | null>(null)
+  let [parentProject, setParentProject] = useState<Project | null>(null)
   let [error, setError] = useState<string | null>(null)
   const [newProjectMutation, { isLoading }] = useMutation(newProject)
 
@@ -26,8 +29,9 @@ const Home: BlitzPage = () => {
     try {
       let newProject: Project = await newProjectMutation({
         description,
-        repositoryName,
+        repositoryName: parentProject ? parentProject.repositoryName : repositoryName,
         token: session.data.session?.provider_token,
+        newBranchName: parentProject ? repositoryName : undefined,
       })
       console.log(newProject)
       setProject(newProject)
@@ -37,10 +41,14 @@ const Home: BlitzPage = () => {
     }
   }
 
+  const githubURL = parentProject ? project?.branchURL : project?.repositoryURL
+
   return (
     <Layout title="Home">
       <div style={{ width: "650px", margin: "100px auto" }}>
-        <h1 style={{ textAlign: "left" }}>👷🏼 What would you like to make?</h1>
+        <h1 style={{ textAlign: "left", marginBottom: "40px" }}>
+          👷🏼 What would you like to {parentProject ? "change" : "make"}?
+        </h1>
         <GitHubLoginForm>
           {isLoading ? (
             <div style={{ textAlign: "center" }}>
@@ -49,15 +57,17 @@ const Home: BlitzPage = () => {
                 max="100"
               />
               <br />
-              Generating your codebase. This typically takes 1-3 minutes.
+              {parentProject
+                ? "Modifying your codebase. This typically takes about a minute."
+                : "Generating your codebase. This typically takes 1-3 minutes."}
             </div>
-          ) : project && project.repositoryURL ? (
+          ) : project ? (
             <div style={{ textAlign: "center" }}>
               <p>
                 Your codebase is available at the following URL:
                 <br />
-                <a href={project.repositoryURL} target="_blank" rel="noreferrer">
-                  {project.repositoryURL}
+                <a href={githubURL} target="_blank" rel="noreferrer">
+                  {githubURL}
                 </a>
               </p>
               <div style={{ display: "flex", flexDirection: "row", marginTop: "50px" }}>
@@ -68,7 +78,19 @@ const Home: BlitzPage = () => {
                   style={{ marginRight: "5px" }}
                   className="secondary"
                 >
-                  ✏️ Re-generate
+                  🔄 Re-generate {parentProject ? "branch" : "project"}
+                </button>
+                <button
+                  onClick={() => {
+                    setParentProject(project)
+                    setProject(null)
+                    setDescription("")
+                    setRepositoryName("")
+                  }}
+                  style={{ marginRight: "5px" }}
+                  className="secondary"
+                >
+                  🌿 Make a new branch
                 </button>
                 <button
                   onClick={() => {
@@ -78,12 +100,12 @@ const Home: BlitzPage = () => {
                   }}
                   style={{ marginLeft: "5px" }}
                 >
-                  🛠️ Make another project
+                  🛠️ Make a new project
                 </button>
               </div>
             </div>
           ) : (
-            <form onSubmit={createProject}>
+            <form onSubmit={createProject} style={{ marginTop: "55px" }}>
               {error && (
                 <div
                   style={{
@@ -97,8 +119,18 @@ const Home: BlitzPage = () => {
                   {error}
                 </div>
               )}
+              {parentProject && (
+                <div style={{ textAlign: "center", fontSize: "x-large", marginBottom: "25px" }}>
+                  Making a branch on{" "}
+                  {new URL(parentProject.repositoryURL!).pathname.replace(/^\//, "")}{" "}
+                </div>
+              )}
               <textarea
-                placeholder="A cookbook web app using React and Tailwind..."
+                placeholder={
+                  parentProject
+                    ? "Add a mobile-friendly navigation bar"
+                    : "A cookbook web app using React and Tailwind..."
+                }
                 style={{ fontSize: "x-large" }}
                 value={description}
                 onChange={({ target: { value: input } }) => {
@@ -118,7 +150,7 @@ const Home: BlitzPage = () => {
               />
               <input
                 type="text"
-                placeholder="repository-name"
+                placeholder={parentProject ? "feature-name" : "repository-name"}
                 value={repositoryName}
                 onChange={({ target: { value: input } }) => {
                   setRepositoryName(input)
