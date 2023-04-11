@@ -64,12 +64,25 @@ const Home: BlitzPage = () => {
           ) : project ? (
             <div style={{ textAlign: "center" }}>
               <p>
-                Your codebase is available at the following URL:
+                Your {parentProject ? "new branch" : "codebase"} is available at:
                 <br />
                 <a href={githubURL} target="_blank" rel="noreferrer">
-                  {githubURL}
+                  {githubURL?.replace(/https?:\/\/github.com\//, "")?.replace("/tree/", "/")}
                 </a>
               </p>
+              {parentProject && (
+                <p>
+                  To work with the changes,{" "}
+                  <a
+                    href={githubURL?.replace("/tree/", "/pull/new/")}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    make a pull request
+                  </a>{" "}
+                  and merge the request.
+                </p>
+              )}
               <div style={{ display: "flex", flexDirection: "row", marginTop: "50px" }}>
                 <button
                   onClick={() => {
