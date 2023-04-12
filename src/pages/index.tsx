@@ -99,6 +99,7 @@ const Home: BlitzPage = () => {
                     setProject(null)
                     setDescription("")
                     setRepositoryName("")
+                    setRepositoryNameEdited(false)
                   }}
                   style={{ marginRight: "5px" }}
                   className="secondary"
@@ -110,6 +111,7 @@ const Home: BlitzPage = () => {
                     setProject(null)
                     setDescription("")
                     setRepositoryName("")
+                    setRepositoryNameEdited(false)
                   }}
                   style={{ marginLeft: "5px" }}
                 >
