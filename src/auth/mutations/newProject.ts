@@ -37,5 +37,5 @@ export default async function newProject({ description, repositoryName, newBranc
     branchName: newBranchName
   })
   let { buildScript, buildLog, repositoryURL, branchURL } = await project.buildAndPush()
-  return { repositoryURL, branchURL, repositoryName }
+  return { repositoryURL, branchURL, repositoryName, branchName: newBranchName }
 }
