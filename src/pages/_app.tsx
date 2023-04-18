@@ -5,6 +5,8 @@ import { withBlitz } from "src/blitz-client"
 import "src/styles/globals.css"
 import "@picocss/pico"
 
+import "app/core/styles/index.css";
+
 function RootErrorFallback({ error }: ErrorFallbackProps) {
   if (error instanceof AuthenticationError) {
     return <div>Error: You are not authenticated</div>
