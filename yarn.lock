@@ -1396,6 +1396,20 @@
   resolved "https://registry.npmjs.org/@sindresorhus/is/-/is-4.6.0.tgz"
   integrity sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==
 
+"@supabase/auth-helpers-nextjs@0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@supabase/auth-helpers-nextjs/-/auth-helpers-nextjs-0.6.1.tgz#d327099201a55b8225e0f8e642c6a18eccbab9ca"
+  integrity sha512-ffDAR4pW2Cosj/CuuGRAhzOFfHtqzdgax7zqRGGyq334gxxPplsmJFGaLPRJ3Z/4mTSIJHyFd6LYdHMN0a+5Bw==
+  dependencies:
+    "@supabase/auth-helpers-shared" "0.3.4"
+
+"@supabase/auth-helpers-shared@0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@supabase/auth-helpers-shared/-/auth-helpers-shared-0.3.4.tgz#dcea97d55d535a720023f081576f3b61e00ad75f"
+  integrity sha512-8I3D0SPHHexkFTSfPg0nZgJSVazWoB3tZDpT6IjRv6w89vDMUzO99Lit4H9anVLF4teW8c/nJJxawDNbDlgbgg==
+  dependencies:
+    jose "^4.14.0"
+
 "@supabase/functions-js@^2.1.0":
   version "2.1.0"
   resolved "https://registry.npmjs.org/@supabase/functions-js/-/functions-js-2.1.0.tgz"
@@ -5504,6 +5518,11 @@ jiti@^1.17.2:
   version "1.18.2"
   resolved "https://registry.yarnpkg.com/jiti/-/jiti-1.18.2.tgz#80c3ef3d486ebf2450d9335122b32d121f2a83cd"
   integrity sha512-QAdOptna2NYiSSpv0O/BwoHBSmz4YhpzJHyi+fnMRTXFjp7B8i/YG5Z8IfusxB1ufjcD2Sre1F3R+nX3fvy7gg==
+
+jose@^4.14.0:
+  version "4.14.0"
+  resolved "https://registry.yarnpkg.com/jose/-/jose-4.14.0.tgz#c8c03579a0ba3598194c92ccca777d96adca8f48"
+  integrity sha512-LSA/XenLPwqk6e2L+PSUNuuY9G4NGsvjRWz6sJcUBmzTLEPJqQh46FHSUxnAQ64AWOkRO6bSXpy3yXuEKZkbIA==
 
 js-sdsl@^4.1.4:
   version "4.4.0"
