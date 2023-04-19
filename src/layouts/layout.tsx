@@ -4,7 +4,7 @@ import { Bars3Icon } from "@heroicons/react/20/solid"
 import { XMarkIcon } from "@heroicons/react/24/outline"
 import { Disclosure } from "@headlessui/react"
 
-const navigation = [{ name: "Projects", href: "#" }]
+const navigation = [{ name: "Projects", href: "/projects" }]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -145,9 +145,7 @@ export default function Layout({ children }) {
         )}
       </Disclosure>
 
-      <main>
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">{children}</div>
-      </main>
+      <main>{children}</main>
     </>
   )
 }
