@@ -69,3 +69,23 @@ model Invite {
   createdAt DateTime @default(now())
   username  String
 }
+
+model GitHubUser {
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  githubId   String?
+  supabaseId String?
+  Project    Project[]
+}
+
+model Project {
+  id             Int        @id @default(autoincrement())
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  repositoryName String?
+  repositoryURL  String?
+  description    String?
+  owner          GitHubUser @relation(fields: [ownerId], references: [id])
+  ownerId        Int
+}
