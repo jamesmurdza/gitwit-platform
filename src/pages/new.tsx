@@ -1,18 +1,31 @@
 import { useState } from "react"
 import Layout from "src/layouts/layout"
 import Link from "next/link"
+import { useMutation } from "@blitzjs/rpc"
+import createProject from "src/projects/mutations/createProject"
+import router from "next/router"
 
 const stacks = ["ReactJS", "NextJS", "Django", "Python"]
 
 export default function NewProjectPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  const [createProjectMutation] = useMutation(createProject)
+  const onSubmit = async (event) => {
+    event.preventDefault()
+    const result = await createProjectMutation({
+      description: "A great project with lots of fresh vegetables",
+      repositoryName: "fresh-vegetables",
+    })
+    await router.push(`/project?id=${result.id}`)
+  }
+
   return (
     <>
       <Layout>
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           {/* Projects list*/}
-          <form>
+          <form onSubmit={onSubmit}>
             <div className="space-y-12">
               <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
                 <div>
@@ -103,7 +116,7 @@ export default function NewProjectPage() {
                 type="submit"
                 className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Save
+                Create
               </button>
             </div>
           </form>
