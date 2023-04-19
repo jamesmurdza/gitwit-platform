@@ -1,34 +1,84 @@
-import { Fragment, useState } from "react"
+import { Fragment } from "react"
+import { useQuery } from "@blitzjs/rpc"
 import { Menu, Transition } from "@headlessui/react"
 import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid"
 import Layout from "src/layouts/layout"
 import Link from "next/link"
-
-const clients = [
-  {
-    id: 1,
-    name: "Tuple",
-    description: "Accounting software",
-  },
-  {
-    id: 2,
-    name: "SavvyCal",
-    description: "Calendar app",
-  },
-  {
-    id: 3,
-    name: "Reform",
-    description: "Legal services",
-  },
-]
+import getProjects from "src/projects/queries/getProjects"
+import { Suspense } from "react"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
-export default function Example() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+function ProjectsList() {
+  const [projects, isLoading] = useQuery(getProjects, { where: { ownerId: 1 } })
+  return (
+    <ul role="list" className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
+      {projects &&
+        projects.projects.map((project) => (
+          <li key={project.id} className="overflow-hidden rounded-xl border border-gray-200">
+            <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+              <div className="text-sm font-medium leading-6 text-gray-900">
+                {project.repositoryName}
+              </div>
+              <Menu as="div" className="relative ml-auto">
+                <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
+                  <span className="sr-only">Open options</span>
+                  <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
+                </Menu.Button>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="/project"
+                          className={classNames(
+                            active ? "bg-gray-50" : "",
+                            "block px-3 py-1 text-sm leading-6 text-gray-900"
+                          )}
+                        >
+                          View<span className="sr-only">, {project.repositoryName}</span>
+                        </a>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={classNames(
+                            active ? "bg-gray-50" : "",
+                            "block px-3 py-1 text-sm leading-6 text-gray-900"
+                          )}
+                        >
+                          Edit<span className="sr-only">, {project.repositoryName}</span>
+                        </a>
+                      )}
+                    </Menu.Item>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            </div>
+            <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+              <div className="flex justify-between gap-x-4 py-3">
+                <dd className="text-gray-700">{project.description}</dd>
+              </div>
+            </dl>
+          </li>
+        ))}
+    </ul>
+  )
+}
 
+export default function ProjectsPage() {
   return (
     <>
       <Layout>
@@ -49,69 +99,9 @@ export default function Example() {
                   </Link>
                 </div>
               </div>
-              <ul
-                role="list"
-                className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8"
-              >
-                {clients.map((client) => (
-                  <li key={client.id} className="overflow-hidden rounded-xl border border-gray-200">
-                    <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                      <div className="text-sm font-medium leading-6 text-gray-900">
-                        {client.name}
-                      </div>
-                      <Menu as="div" className="relative ml-auto">
-                        <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
-                          <span className="sr-only">Open options</span>
-                          <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
-                        </Menu.Button>
-                        <Transition
-                          as={Fragment}
-                          enter="transition ease-out duration-100"
-                          enterFrom="transform opacity-0 scale-95"
-                          enterTo="transform opacity-100 scale-100"
-                          leave="transition ease-in duration-75"
-                          leaveFrom="transform opacity-100 scale-100"
-                          leaveTo="transform opacity-0 scale-95"
-                        >
-                          <Menu.Items className="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                            <Menu.Item>
-                              {({ active }) => (
-                                <a
-                                  href="/project"
-                                  className={classNames(
-                                    active ? "bg-gray-50" : "",
-                                    "block px-3 py-1 text-sm leading-6 text-gray-900"
-                                  )}
-                                >
-                                  View<span className="sr-only">, {client.name}</span>
-                                </a>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <a
-                                  href="#"
-                                  className={classNames(
-                                    active ? "bg-gray-50" : "",
-                                    "block px-3 py-1 text-sm leading-6 text-gray-900"
-                                  )}
-                                >
-                                  Edit<span className="sr-only">, {client.name}</span>
-                                </a>
-                              )}
-                            </Menu.Item>
-                          </Menu.Items>
-                        </Transition>
-                      </Menu>
-                    </div>
-                    <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                      <div className="flex justify-between gap-x-4 py-3">
-                        <dd className="text-gray-700">{client.description}</dd>
-                      </div>
-                    </dl>
-                  </li>
-                ))}
-              </ul>
+              <Suspense fallback={<div className="text-center mt-5 text-sm">Loading...</div>}>
+                <ProjectsList />
+              </Suspense>
             </div>
           </div>
         </div>
