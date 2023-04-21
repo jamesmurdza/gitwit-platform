@@ -1,10 +1,11 @@
-import { Fragment } from "react"
-import { useQuery } from "@blitzjs/rpc"
+import { Fragment, useRef } from "react"
+import { useQuery, useMutation } from "@blitzjs/rpc"
 import { Menu, Transition } from "@headlessui/react"
 import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid"
 import Layout from "src/layouts/layout"
 import Link from "next/link"
 import getProjects from "src/projects/queries/getProjects"
+import deleteProject from "src/projects/mutations/deleteProject"
 import { Suspense } from "react"
 
 function classNames(...classes) {
@@ -12,7 +13,14 @@ function classNames(...classes) {
 }
 
 function ProjectsList() {
-  const [projects, isLoading] = useQuery(getProjects, { where: { ownerId: 1 } })
+  const queryRef = useRef()
+  const [projects, { refetch }] = useQuery(getProjects, { where: { ownerId: 1 } })
+  const [deleteProjectMutation] = useMutation(deleteProject, {
+    onSuccess: async () => {
+      await refetch()
+    },
+  })
+
   return (
     <ul role="list" className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
       {projects &&
@@ -54,12 +62,15 @@ function ProjectsList() {
                       {({ active }) => (
                         <a
                           href="#"
+                          onClick={async () => {
+                            await deleteProjectMutation({ id: project.id })
+                          }}
                           className={classNames(
                             active ? "bg-gray-50" : "",
                             "block px-3 py-1 text-sm leading-6 text-gray-900"
                           )}
                         >
-                          Edit<span className="sr-only">, {project.repositoryName}</span>
+                          Delete<span className="sr-only">, {project.repositoryName}</span>
                         </a>
                       )}
                     </Menu.Item>

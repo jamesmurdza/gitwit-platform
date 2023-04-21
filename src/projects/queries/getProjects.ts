@@ -11,7 +11,11 @@ interface GetProjectsInput
 
 export default resolver.pipe(
   async ({ where, orderBy, skip = 0, take = 100 }: GetProjectsInput, ctx) => {
-    const whereUser = { ...where, ownerId: await getUserId(ctx) };
+    const whereUser = {
+      ...where,
+      ownerId: await getUserId(ctx),
+      deleted: false
+    };
     const {
       items: projects,
       hasMore,
