@@ -2,6 +2,7 @@ import { resolver } from "@blitzjs/rpc";
 import db from "db";
 import { z } from "zod";
 import { getUserId } from "src/utils/user";
+import buildProjectQueue from "src/pages/api/buildProject"
 
 const CreateProject = z.object({
   description: z.string(),
@@ -19,6 +20,8 @@ export default resolver.pipe(
         ownerId: await getUserId(ctx)
       }
     });
+
+    await buildProjectQueue.enqueue(project.id)
 
     return project;
   }
