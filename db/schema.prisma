@@ -88,6 +88,7 @@ model Project {
   description    String?
   owner          GitHubUser @relation(fields: [ownerId], references: [id])
   ownerId        Int
+  deleted        Boolean    @default(false)
   Build          Build[]
 }
 
