@@ -1,17 +1,37 @@
 import { useState } from "react"
 import Layout from "src/layouts/layout"
-import { Switch } from "@headlessui/react"
-import { UserCircleIcon } from "@heroicons/react/24/outline"
+import {
+  CodeBracketSquareIcon,
+  ClockIcon,
+  ExclamationTriangleIcon,
+  DocumentIcon,
+} from "@heroicons/react/24/outline"
 import { Fragment } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid"
 
-const secondaryNavigation = [{ name: "General", href: "#", icon: UserCircleIcon, current: true }]
+const secondaryNavigation = [
+  { name: "Code", href: "#", icon: CodeBracketSquareIcon, current: true },
+  { name: "Versions", href: "#", icon: ClockIcon, current: false },
+  { name: "Logs", href: "#", icon: ExclamationTriangleIcon, ClockIcon: false },
+]
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
-export default function NewProjectPage() {
+const people = [
+  {
+    path: "index.html",
+  },
+  {
+    path: "js/index.js",
+  },
+  {
+    path: "css/index.css",
+  },
+]
+
+export default function ProjectPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [automaticTimezoneEnabled, setAutomaticTimezoneEnabled] = useState(true)
 
@@ -32,11 +52,11 @@ export default function NewProjectPage() {
                     className="h-16 w-16 flex-none rounded-full ring-1 ring-gray-900/10"
                   />
                   <h1>
-                    <div className="text-sm leading-6 text-gray-500">
-                      Invoice <span className="text-gray-700">#00011</span>
-                    </div>
                     <div className="mt-1 text-base font-semibold leading-6 text-gray-900">
                       Tuple, Inc
+                    </div>
+                    <div className="text-sm leading-6 text-gray-500">
+                      Invoice <span className="text-gray-700">#00011</span>
                     </div>
                   </h1>
                 </div>
@@ -140,59 +160,77 @@ export default function NewProjectPage() {
                 </ul>
               </nav>
             </aside>
-
             <main className="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-12">
-              <div className="mx-auto max-w-2xl space-y-16 sm:space-y-20 lg:mx-0 lg:max-w-none">
-                <div>
-                  <h2 className="text-base font-semibold leading-7 text-gray-900">Profile</h2>
-                  <p className="mt-1 text-sm leading-6 text-gray-500">
-                    This information will be displayed publicly so be careful what you share.
+              <div className="bg-gray-50 sm:rounded-lg mb-12">
+                <div className="px-4 py-5 sm:p-6">
+                  <h3 className="text-base font-semibold leading-6 text-gray-900">
+                    Need more bandwidth?
+                  </h3>
+                  <div className="mt-2 max-w-xl text-sm text-gray-500">
+                    <p>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus
+                      praesentium tenetur pariatur.
+                    </p>
+                  </div>
+                  <div className="mt-5">
+                    <button
+                      type="button"
+                      className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    >
+                      Contact sales
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="sm:flex sm:items-center">
+                <div className="sm:flex-auto">
+                  <h1 className="text-base font-semibold leading-6 text-gray-900">Preview</h1>
+                  <p className="mt-2 text-sm text-gray-700">
+                    A preview of the source code in this project:
                   </p>
-
-                  <dl className="mt-6 space-y-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
-                    <div className="pt-6 sm:flex">
-                      <dt className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">
-                        Full name
-                      </dt>
-                      <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-                        <div className="text-gray-900">Tom Cook</div>
-                        <button
-                          type="button"
-                          className="font-semibold text-indigo-600 hover:text-indigo-500"
-                        >
-                          Update
-                        </button>
-                      </dd>
-                    </div>
-                    <div className="pt-6 sm:flex">
-                      <dt className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">
-                        Email address
-                      </dt>
-                      <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-                        <div className="text-gray-900">tom.cook@example.com</div>
-                        <button
-                          type="button"
-                          className="font-semibold text-indigo-600 hover:text-indigo-500"
-                        >
-                          Update
-                        </button>
-                      </dd>
-                    </div>
-                    <div className="pt-6 sm:flex">
-                      <dt className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">
-                        Title
-                      </dt>
-                      <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-                        <div className="text-gray-900">Human Resources Manager</div>
-                        <button
-                          type="button"
-                          className="font-semibold text-indigo-600 hover:text-indigo-500"
-                        >
-                          Update
-                        </button>
-                      </dd>
-                    </div>
-                  </dl>
+                </div>
+                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                  <button
+                    type="button"
+                    className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  >
+                    Add user
+                  </button>
+                </div>
+              </div>
+              <div className="mt-8 flow-root">
+                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                  <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <table className="min-w-full divide-y divide-gray-300">
+                      <thead>
+                        <tr>
+                          <th
+                            scope="col"
+                            className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                          >
+                            Name
+                          </th>
+                          <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                            <span className="sr-only">View</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {people.map((person) => (
+                          <tr key={person.path}>
+                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                              {person.path}
+                            </td>
+                            <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                              <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                View<span className="sr-only">, {person.path}</span>
+                              </a>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </main>
