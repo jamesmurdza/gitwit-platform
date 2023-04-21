@@ -88,4 +88,32 @@ model Project {
   description    String?
   owner          GitHubUser @relation(fields: [ownerId], references: [id])
   ownerId        Int
+  Build          Build[]
+}
+
+enum BuildType {
+  REPOSITORY
+  BRANCH
+}
+
+enum BuildStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILURE
+}
+
+model Build {
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  Project       Project     @relation(fields: [projectId], references: [id])
+  projectId     Int
+  buildType     BuildType
+  status        BuildStatus @default(PENDING)
+  gptModel      String?
+  gitwitVersion String?
+  buildLog      String?
+  buildScript   String?
+  baseImage     String?
 }
