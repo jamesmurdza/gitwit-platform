@@ -40,7 +40,7 @@ function ProjectsList() {
                     <Menu.Item>
                       {({ active }) => (
                         <a
-                          href="/project"
+                          href={`/project/${project.id}`}
                           className={classNames(
                             active ? "bg-gray-50" : "",
                             "block px-3 py-1 text-sm leading-6 text-gray-900"
@@ -99,7 +99,7 @@ export default function ProjectsPage() {
                   </Link>
                 </div>
               </div>
-              <Suspense fallback={<div className="text-center mt-5 text-sm">Loading...</div>}>
+              <Suspense fallback={<div className="text-center mt-8">Loading...</div>}>
                 <ProjectsList />
               </Suspense>
             </div>

@@ -17,7 +17,7 @@ export default function NewProjectPage() {
       description: "A great project with lots of fresh vegetables",
       repositoryName: "fresh-vegetables",
     })
-    await router.push(`/project?id=${result.id}`)
+    await router.push(`/project/${result.id}`)
   }
 
   return (
