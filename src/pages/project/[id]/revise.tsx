@@ -4,7 +4,7 @@ import createProject from "src/projects/mutations/createProject"
 import { useMutation } from "@blitzjs/rpc"
 import router from "next/router"
 
-export default function NewProjectPage() {
+export default function ReviseProjectPage() {
   const [createProjectMutation] = useMutation(createProject)
 
   return (
@@ -21,8 +21,9 @@ export default function NewProjectPage() {
             })
             await router.push(`/project/${result.id}`)
           }}
-          title="Project"
-          instructions="Generate a base repository upon which to make further code additions."
+          title="New revision"
+          instructions="Modify project code to add features, fix bugs, or make other improvements."
+          parent={22}
         />
       </Layout>
     </>
