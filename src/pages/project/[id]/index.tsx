@@ -1,43 +1,23 @@
-import { Suspense, useState } from "react"
+import { Suspense, Fragment } from "react"
 import { useQuery } from "@blitzjs/rpc"
-import Layout from "src/layouts/layout"
+import { useParam } from "@blitzjs/next"
+
+import { Menu, Transition } from "@headlessui/react"
 import { BarLoader } from "react-spinners"
+import { EllipsisVerticalIcon } from "@heroicons/react/20/solid"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCodeBranch } from "@fortawesome/free-solid-svg-icons"
+import { faGithub } from "@fortawesome/free-brands-svg-icons"
 import {
   CodeBracketSquareIcon,
   ClockIcon,
   ExclamationTriangleIcon,
-  DocumentIcon,
   FolderIcon,
 } from "@heroicons/react/24/outline"
-import { Fragment } from "react"
-import { Menu, Transition } from "@headlessui/react"
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid"
+
 import getProject from "src/projects/queries/getProject"
-import { useParam } from "@blitzjs/next"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCodeBranch } from "@fortawesome/free-solid-svg-icons"
-import { faGithub } from "@fortawesome/free-brands-svg-icons"
-
-const secondaryNavigation = [
-  { name: "Code", href: "#", icon: CodeBracketSquareIcon, current: true },
-  { name: "Versions", href: "#", icon: ClockIcon, current: false },
-  { name: "Logs", href: "#", icon: ExclamationTriangleIcon, ClockIcon: false },
-]
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ")
-}
-
-const people = [
-  {
-    path: "index.html",
-  },
-  {
-    path: "js/index.js",
-  },
-  {
-    path: "css/index.css",
-  },
-]
+import Layout from "src/layouts/layout"
+import { FilePreview } from "src/components/filePreview"
 
 export default function ProjectPage() {
   return (
@@ -52,12 +32,21 @@ export default function ProjectPage() {
 }
 
 export function ProjectView() {
+  const secondaryNavigation = [
+    { name: "Code", href: "#", icon: CodeBracketSquareIcon, current: true },
+    { name: "Versions", href: "#", icon: ClockIcon, current: false },
+    { name: "Logs", href: "#", icon: ExclamationTriangleIcon, ClockIcon: false },
+  ]
+  function classNames(...classes) {
+    return classes.filter(Boolean).join(" ")
+  }
+
   const idParam = useParam("id")
   const id = typeof idParam == "string" ? Number.parseInt(idParam) : undefined
   const [project, isLoading] = useQuery(getProject, { id }, { refetchInterval: 5000 })
 
   const getRegexMatch = (regex: RegExp, string: string) => {
-    const matches: RegExpExecArray = regex.exec(string)
+    const matches: RegExpExecArray | null = regex.exec(string)
     return matches ? matches[1] : ""
   }
 
@@ -202,12 +191,14 @@ export function ProjectView() {
                       </p>
                     </div>
                     <div className="mt-5">
-                      <button
-                        type="button"
-                        className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                      >
-                        Make a new version
-                      </button>
+                      <a href={`/project/${project.id}/revise`}>
+                        <button
+                          type="button"
+                          className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                        >
+                          Make a revision
+                        </button>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -221,47 +212,13 @@ export function ProjectView() {
                   <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
                     <button
                       type="button"
-                      className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                     >
-                      Add user
+                      Add files
                     </button>
                   </div>
                 </div>
-                <div className="mt-8 flow-root">
-                  <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                      <table className="min-w-full divide-y divide-gray-300">
-                        <thead>
-                          <tr>
-                            <th
-                              scope="col"
-                              className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                            >
-                              Name
-                            </th>
-                            <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                              <span className="sr-only">View</span>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                          {people.map((person) => (
-                            <tr key={person.path}>
-                              <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                                {person.path}
-                              </td>
-                              <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                                <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                                  View<span className="sr-only">, {person.path}</span>
-                                </a>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
+                <FilePreview repositoryName={fullRepositoryName} />
               </>
             )}
           </main>
