@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Layout from "src/layouts/layout"
 import Link from "next/link"
 import { useMutation } from "@blitzjs/rpc"
@@ -8,17 +8,36 @@ import router from "next/router"
 const stacks = ["ReactJS", "NextJS", "Django", "Python"]
 
 export default function NewProjectPage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [description, setDescription] = useState("")
+  const [repositoryName, setRepositoryName] = useState("")
+  const [repositoryNameEdited, setRepositoryNameEdited] = useState(false)
 
   const [createProjectMutation] = useMutation(createProject)
   const onSubmit = async (event) => {
     event.preventDefault()
+    if (!repositoryName || !description) {
+      return
+    }
     const result = await createProjectMutation({
-      description: "A great project with lots of fresh vegetables",
-      repositoryName: "fresh-vegetables",
+      description: description,
+      repositoryName: repositoryName,
     })
     await router.push(`/project/${result.id}`)
   }
+
+  useEffect(() => {
+    if (!repositoryNameEdited) {
+      let respositoryName = description
+        .toLocaleLowerCase()
+        .replace(/[^A-Za-z0-9 ]/g, "")
+        .split(" ")
+        .filter((word) => word !== "a" && word !== "an" && word !== "the")
+        .filter((word) => word !== "")
+        .splice(0, 6)
+        .join("-")
+      setRepositoryName(respositoryName)
+    }
+  }, [description, repositoryNameEdited])
 
   return (
     <>
@@ -45,12 +64,16 @@ export default function NewProjectPage() {
                     </label>
                     <div className="mt-2">
                       {stacks.map((stack, index) => (
-                        <span
+                        <button
+                          type="button"
                           key={index}
+                          onClick={() => {
+                            setDescription(description + stack + " ")
+                          }}
                           className="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800 mx-2"
                         >
                           {stack}
-                        </span>
+                        </button>
                       ))}
                     </div>
                     <p className="mt-3 text-sm leading-6 text-gray-600">
@@ -71,6 +94,11 @@ export default function NewProjectPage() {
                         rows={3}
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         defaultValue={""}
+                        value={description}
+                        onChange={(e) => {
+                          const input = e.target.value
+                          setDescription(input)
+                        }}
                       />
                     </div>
                     <p className="mt-3 text-sm leading-6 text-gray-600">
@@ -95,6 +123,11 @@ export default function NewProjectPage() {
                           id="website"
                           className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                           placeholder="repository-name"
+                          value={repositoryName}
+                          onChange={(e) => {
+                            setRepositoryName(e.target.value)
+                            setRepositoryNameEdited(true)
+                          }}
                         />
                       </div>
                       <p className="mt-3 text-sm leading-6 text-gray-600">
