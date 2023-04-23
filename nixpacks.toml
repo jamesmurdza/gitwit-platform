@@ -1,0 +1,7 @@
+[phases.install]
+onlyIncludeFiles = [
+  ".npmrc",
+  "package.json",
+  "yarn.lock",
+  "db/schema.prisma"
+]
