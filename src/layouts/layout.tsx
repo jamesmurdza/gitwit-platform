@@ -1,4 +1,5 @@
 import { Fragment, useState, useEffect } from "react"
+import { ErrorBoundary } from "@blitzjs/next"
 import { Menu, Transition } from "@headlessui/react"
 import { Bars3Icon } from "@heroicons/react/20/solid"
 import { XMarkIcon } from "@heroicons/react/24/outline"
@@ -9,6 +10,19 @@ const navigation = [{ name: "Projects", href: "/projects" }]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
+}
+
+function ErrorFallback({ error, resetErrorBoundary }) {
+  return (
+    <div className="bg-white h-screen flex flex-col items-center justify-center">
+      <div className="flex items-center">
+        <h1 className="text-2xl font-semibold border-r-2 border-gray-300 pr-4 mr-4">500</h1>
+        <div className="inline-block">
+          <h2 className="text-base font-normal leading-none">{error.message}</h2>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function Layout({ children }) {
@@ -187,7 +201,9 @@ export default function Layout({ children }) {
         )}
       </Disclosure>
 
-      <main>{children}</main>
+      <main>
+        <ErrorBoundary FallbackComponent={ErrorFallback}>{children}</ErrorBoundary>
+      </main>
     </>
   )
 }
