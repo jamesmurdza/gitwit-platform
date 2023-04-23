@@ -34,12 +34,17 @@ export default function Layout({ children }) {
     await supabase.auth.signOut()
   }
 
+  // If the GitHub auth token has expired, sign the user out.
+  const handleError = async (error: Error, info: { componentStack: string }) => {
+    if (error.name === "GitHubAuthenticationError") {
+      await signOut()
+    }
+  }
+
   useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(() => {
-      // router.refresh()
-
       const fetchUserData = async () => {
         const {
           data: { user },
@@ -202,7 +207,9 @@ export default function Layout({ children }) {
       </Disclosure>
 
       <main>
-        <ErrorBoundary FallbackComponent={ErrorFallback}>{children}</ErrorBoundary>
+        <ErrorBoundary FallbackComponent={ErrorFallback} onError={handleError}>
+          {children}
+        </ErrorBoundary>
       </main>
     </>
   )

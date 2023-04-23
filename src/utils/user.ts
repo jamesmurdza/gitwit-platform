@@ -37,8 +37,21 @@ export const upsertUser = async (githubId: string) => {
   return newUser;
 }
 
+// When this error is detected, the user will be signed out on the frontend.
+class GitHubAuthenticationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "GitHubAuthenticationError";
+  }
+}
+
 // This creates the signed in user if it doesn't exist, and returns its id.
 export const getUserId = async (ctx: Ctx) => {
   const login = (await getUserData(ctx)).login;
+
+  // If the GitHub auth token has expired, throw an error so the user is signed out.
+  // We currently don't have a way to refresh the token.
+  if (login === undefined) throw new GitHubAuthenticationError("Could not get user data");
+
   return (await upsertUser(login)).id;
 }
