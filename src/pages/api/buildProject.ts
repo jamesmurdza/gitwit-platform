@@ -30,22 +30,34 @@ export default Queue("api/buildProject", async (projectId: number) => {
     user: owner.githubId!,
   }
   console.log(input)
-  let gitwitProject = new Project(input)
-  let { buildScript, buildLog, repositoryURL, branchURL } = await gitwitProject.buildAndPush()
+  try {
 
-  await db.build.update({
-    where: { id: build.id },
-    data: {
-      status: "SUCCESS",
-      buildScript,
-      buildLog,
-    }
-  })
+    let gitwitProject = new Project(input)
+    let { buildScript, buildLog, repositoryURL, branchURL } = await gitwitProject.buildAndPush()
 
-  await db.project.update({
-    where: { id: projectId },
-    data: {
-      repositoryURL,
-    }
-  })
+    await db.build.update({
+      where: { id: build.id },
+      data: {
+        status: "SUCCESS",
+        buildScript,
+        buildLog,
+      }
+    })
+
+    await db.project.update({
+      where: { id: projectId },
+      data: {
+        repositoryURL,
+      }
+    })
+  } catch (error) {
+    await db.build.update({
+      where: { id: build.id },
+      data: {
+        status: "FAILURE",
+        buildError: error.message,
+      }
+    })
+  }
+
 })

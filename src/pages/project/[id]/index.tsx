@@ -50,7 +50,9 @@ export function ProjectView() {
     return matches ? matches[1] : ""
   }
 
-  const fullRepositoryName = getRegexMatch(/github\.com\/(.+)(\.git)?/, project.repositoryURL || "")
+  const fullRepositoryName = project.repositoryURL
+    ? getRegexMatch(/github\.com\/(.+)(\.git)?/, project.repositoryURL)
+    : null
   const htmlRepositoryURL = getRegexMatch(/(.+)(\.git)?/, project.repositoryURL || "")
 
   return (
@@ -178,30 +180,50 @@ export function ProjectView() {
               </div>
             )}
             {project.build && project.build.status == "SUCCESS" && (
-              <>
-                <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
-                  <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-base font-semibold leading-6 text-gray-900">
-                      Add features or fix bugs
-                    </h3>
-                    <div className="mt-2 text-sm text-gray-500">
-                      <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus
-                        praesentium tenetur pariatur.
-                      </p>
-                    </div>
-                    <div className="mt-5">
-                      <a href={`/project/${project.id}/revise`}>
-                        <button
-                          type="button"
-                          className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                        >
-                          Make a revision
-                        </button>
-                      </a>
-                    </div>
+              <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
+                <div className="px-4 py-5 sm:p-6">
+                  <h3 className="text-base font-semibold leading-6 text-gray-900">
+                    Add features or fix bugs
+                  </h3>
+                  <div className="mt-2 text-sm text-gray-500">
+                    <p>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus
+                      praesentium tenetur pariatur.
+                    </p>
+                  </div>
+                  <div className="mt-5">
+                    <a href={`/project/${project.id}/revise`}>
+                      <button
+                        type="button"
+                        className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                      >
+                        Make a revision
+                      </button>
+                    </a>
                   </div>
                 </div>
+              </div>
+            )}
+            {project.build && project.build.status == "FAILURE" && (
+              <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
+                <div className="px-4 py-5 sm:p-6">
+                  <h3 className="text-base font-semibold leading-6 text-gray-900">Build failed</h3>
+                  <div className="mt-2 text-sm text-gray-500">
+                    <p>{project.build.buildError}</p>
+                  </div>
+                  <div className="mt-5">
+                    <button
+                      type="button"
+                      className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    >
+                      Try again
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {fullRepositoryName && (
+              <>
                 <div className="sm:flex sm:items-center">
                   <div className="sm:flex-auto">
                     <h1 className="text-base font-semibold leading-6 text-gray-900">Preview</h1>
