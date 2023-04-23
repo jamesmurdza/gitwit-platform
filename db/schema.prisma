@@ -115,6 +115,7 @@ model Build {
   gptModel      String?
   gitwitVersion String?
   buildLog      String?
+  buildError    String?
   buildScript   String?
   baseImage     String?
 }
