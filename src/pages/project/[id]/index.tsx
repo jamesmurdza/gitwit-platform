@@ -1,6 +1,7 @@
 import { Suspense, Fragment } from "react"
 import { useQuery } from "@blitzjs/rpc"
 import { useParam } from "@blitzjs/next"
+import Head from "next/head"
 
 import { Menu, Transition } from "@headlessui/react"
 import { BarLoader } from "react-spinners"
@@ -22,9 +23,11 @@ import { FilePreview } from "src/components/filePreview"
 export default function ProjectPage() {
   return (
     <>
-      <Suspense fallback={<div className="text-center mt-8">Loading...</div>}>
-        <ProjectView />
-      </Suspense>
+      <Layout>
+        <Suspense fallback={<div className="text-center mt-8">Loading...</div>}>
+          <ProjectView />
+        </Suspense>
+      </Layout>
     </>
   )
 }
@@ -54,7 +57,10 @@ export function ProjectView() {
   const htmlRepositoryURL = getRegexMatch(/(.+)(\.git)?/, project.repositoryURL || "")
 
   return (
-    <Layout title={project.repositoryName!}>
+    <>
+      <Head>
+        <title>{project.repositoryName} | GitWit</title>
+      </Head>
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
         <header className="relative isolate">
           <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
@@ -244,6 +250,6 @@ export function ProjectView() {
           </main>
         </div>
       </div>
-    </Layout>
+    </>
   )
 }
