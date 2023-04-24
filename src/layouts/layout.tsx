@@ -5,8 +5,13 @@ import { Bars3Icon } from "@heroicons/react/20/solid"
 import { XMarkIcon } from "@heroicons/react/24/outline"
 import { Disclosure } from "@headlessui/react"
 import { useSupabase } from "../auth/supabase-provider"
+import Image from "next/image"
 
-const navigation = [{ name: "Projects", href: "/projects" }]
+const navigation = [
+  { name: "Projects", href: "/projects" },
+  { name: "Explore", href: "/explore" },
+  { name: "Help", href: "/help" },
+]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -79,16 +84,15 @@ export default function Layout({ children }) {
                 </div>
                 <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                   <div className="flex flex-shrink-0 items-center">
-                    <img
-                      className="block h-8 w-auto lg:hidden"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                    <Image
+                      height={24}
+                      width={24}
+                      className="block lg:block"
+                      src="/logo.png"
                       alt="Your Company"
+                      className="mt-1"
                     />
-                    <img
-                      className="hidden h-8 w-auto lg:block"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                      alt="Your Company"
-                    />
+                    <h1 className="text-white ml-2 text-xl mr-5">gitwit</h1>
                   </div>
                   <div className="hidden sm:ml-6 sm:block">
                     <div className="flex space-x-4">
