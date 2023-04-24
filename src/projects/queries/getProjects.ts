@@ -26,7 +26,19 @@ export default resolver.pipe(
       take,
       count: () => db.project.count({ where: whereUser }),
       query: (paginateArgs) =>
-        db.project.findMany({ ...paginateArgs, where: whereUser, orderBy }),
+        db.project.findMany({
+          ...paginateArgs,
+          where: whereUser,
+          include: {
+            Build: {
+              orderBy: {
+                createdAt: 'desc',
+              },
+              take: 1,
+            },
+          },
+          orderBy
+        }),
     });
 
     return {

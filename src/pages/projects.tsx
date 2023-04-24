@@ -8,13 +8,20 @@ import getProjects from "src/projects/queries/getProjects"
 import deleteProject from "src/projects/mutations/deleteProject"
 import { Suspense } from "react"
 
+const statuses = {
+  PENDING: "text-gray-500 bg-gray-100/10",
+  RUNNING: "text-orange-400 bg-orange-400/10",
+  SUCCESS: "text-green-400 bg-green-400/10",
+  FAILURE: "text-rose-400 bg-rose-400/10",
+}
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
 function ProjectsList() {
   const queryRef = useRef()
-  const [projects, { refetch }] = useQuery(getProjects, { where: { ownerId: 1 } })
+  const [projects, { refetch }] = useQuery(getProjects, { where: {} })
   const [deleteProjectMutation] = useMutation(deleteProject, {
     onSuccess: async () => {
       await refetch()
@@ -27,9 +34,19 @@ function ProjectsList() {
         projects.projects.map((project) => (
           <li key={project.id} className="overflow-hidden rounded-xl border border-gray-200">
             <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-              <div className="text-sm font-medium leading-6 text-gray-900">
-                {project.repositoryName}
+              <div
+                className={classNames(
+                  statuses[project.Build[0]?.status || "PENDING"],
+                  "flex-none rounded-full p-1"
+                )}
+              >
+                <div className="h-2 w-2 rounded-full bg-current" />
               </div>
+              <a href={`/project/${project.id}`}>
+                <div className="text-sm font-medium leading-6 text-gray-900">
+                  {project.repositoryName}
+                </div>
+              </a>
               <Menu as="div" className="relative ml-auto">
                 <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
                   <span className="sr-only">Open options</span>
