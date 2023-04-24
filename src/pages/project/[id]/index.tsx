@@ -16,6 +16,9 @@ import {
   FolderIcon,
 } from "@heroicons/react/24/outline"
 
+// This causes the Font Awesome icons to size down properly:
+import "@fortawesome/fontawesome-svg-core/styles.css"
+
 import getProject from "src/projects/queries/getProject"
 import Layout from "src/layouts/layout"
 import { FilePreview } from "src/components/filePreview"
