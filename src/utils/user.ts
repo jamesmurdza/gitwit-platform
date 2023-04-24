@@ -3,8 +3,9 @@ import db from "db"
 
 // This makes an authenticated request to the GitHub API.
 export const queryGitHub = async (ctx: Ctx, url: string, token?: string) => {
-  const tokens = JSON.parse(ctx.session._req.cookies["supabase-auth-token"]);
-  const userToken = tokens[2];
+  const supabaseCookie = ctx.session._req.cookies["supabase-auth-token"];
+  if (supabaseCookie === undefined) throw new Error("Supabase cookie not found");
+  const userToken = JSON.parse(supabaseCookie)[2];
   const response = (
     await fetch(url, {
       headers: {
