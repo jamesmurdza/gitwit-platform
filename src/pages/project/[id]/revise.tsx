@@ -9,7 +9,7 @@ export default function ReviseProjectPage() {
 
   return (
     <>
-      <Layout>
+      <Layout title="Revise project">
         <BuildForm
           onSubmit={async ({ name, description }) => {
             if (!name || !description) {

@@ -6,6 +6,8 @@ import { XMarkIcon } from "@heroicons/react/24/outline"
 import { Disclosure } from "@headlessui/react"
 import { useSupabase } from "../auth/supabase-provider"
 import Image from "next/image"
+import Head from "next/head"
+import { BlitzLayout } from "@blitzjs/next"
 
 const navigation = [
   { name: "Projects", href: "/projects" },
@@ -30,7 +32,10 @@ function ErrorFallback({ error, resetErrorBoundary }) {
   )
 }
 
-export default function Layout({ children }) {
+const PageLayout: BlitzLayout<{ title?: string; children?: React.ReactNode }> = ({
+  title,
+  children,
+}) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { supabase } = useSupabase()
   const [user, setUser] = useState<null | any>(null)
@@ -66,6 +71,10 @@ export default function Layout({ children }) {
 
   return (
     <>
+      <Head>
+        <title>{title ? `${title} | GitWit` : "GitWit"}</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Disclosure as="nav" className="bg-gray-800">
         {({ open }) => (
           <>
@@ -218,3 +227,5 @@ export default function Layout({ children }) {
     </>
   )
 }
+
+export default PageLayout
