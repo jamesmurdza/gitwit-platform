@@ -25,12 +25,12 @@ export default Queue("api/runBuild", async (buildId: number) => {
   const defaultName = isBranch ? "new-feature" : "new-project"
   const input = {
     suggestedName: build.name ?? defaultName,
-    userInput: build.userInput,
+    userInput: build.userInput!,
     buildType: build.buildType,
     creator: process.env.GITHUB_USERNAME!,
-    organization: process.env.GITHUB_ORGNAME!,
-    collaborator: project.owner.githubId,
-    sourceGitURL: build.parentVersion?.outputGitURL,
+    organization: process.env.GITHUB_ORGNAME,
+    collaborator: project.owner.githubId ?? undefined,
+    sourceGitURL: build.parentVersion?.outputGitURL ?? undefined,
   }
 
   console.log(input)
@@ -39,17 +39,10 @@ export default Queue("api/runBuild", async (buildId: number) => {
     let gitwitProject = new Build(input)
     let { outputGitURL, outputHTMLURL, buildScript, buildLog } = await gitwitProject.buildAndPush()
 
-    await db.build.updateMany({
-      where: { projectId: project.id },
-      data: {
-        isCurrentVersion: false,
-      }
-    })
     await db.build.update({
       where: { id: build.id },
       data: {
         status: "SUCCESS",
-        isCurrentVersion: true,
         buildScript,
         buildLog,
         outputGitURL,

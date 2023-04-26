@@ -5,12 +5,11 @@ import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
 
 import type { SupabaseClient } from "@supabase/auth-helpers-nextjs"
-import type { Database } from "@/lib/database.types"
 
 import { GitHubLoginButton } from "src/auth/components/GitHubLoginButton"
 
 type SupabaseContext = {
-  supabase: SupabaseClient<Database>
+  supabase: SupabaseClient
 }
 
 const Context = createContext<SupabaseContext | undefined>(undefined)

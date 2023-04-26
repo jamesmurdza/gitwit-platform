@@ -10,9 +10,9 @@ import Head from "next/head"
 import { BlitzLayout } from "@blitzjs/next"
 
 const navigation = [
-  { name: "Projects", href: "/projects" },
-  { name: "Explore", href: "/explore" },
-  { name: "Help", href: "/help" },
+  { name: "Projects", href: "/projects", current: false },
+  { name: "Explore", href: "/explore", current: false },
+  { name: "Help", href: "/help", current: false },
 ]
 
 function classNames(...classes) {
@@ -96,10 +96,9 @@ const PageLayout: BlitzLayout<{ title?: string; children?: React.ReactNode }> = 
                     <Image
                       height={24}
                       width={24}
-                      className="block lg:block"
+                      className="block lg:block mt-1"
                       src="/logo.png"
                       alt="Your Company"
-                      className="mt-1"
                     />
                     <h1 className="text-white ml-2 text-xl mr-5">gitwit</h1>
                   </div>
