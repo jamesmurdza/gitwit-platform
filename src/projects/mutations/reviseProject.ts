@@ -4,25 +4,32 @@ import { z } from "zod";
 import { getUserId } from "src/utils/user";
 import runBuildQueue from "src/pages/api/runBuild"
 
-const CreateProject = z.object({
+const ReviseProject = z.object({
   description: z.string(),
   name: z.string(),
+  parentVersionId: z.number(),
 });
 
 export default resolver.pipe(
-  resolver.zod(CreateProject),
+  resolver.zod(ReviseProject),
   async (input, ctx) => {
 
-    const project = await db.project.create({
-      data: {
-        description: input.description,
-        repositoryName: input.name,
-        ownerId: await getUserId(ctx)
+    const parent = await db.build.findFirst({
+      where: {
+        id: input.parentVersionId
+      },
+      include: {
+        Project: true
       }
-    });
+    })
 
+    if (!parent) {
+      throw new Error("Parent version not found");
+    }
+
+    const project = parent.Project;
     if (!project) {
-      throw new Error("Failed to create project.")
+      throw new Error("Projct not found.")
     }
 
     // Only one build can be marked as current.
@@ -33,14 +40,15 @@ export default resolver.pipe(
       }
     })
 
-    // Start a build for the new project.
+    // Start a build for the new version of the project.
     const build = await db.build.create({
       data: {
-        projectId: project.id,
         name: input.name,
+        projectId: project.id,
         userInput: input.description,
-        buildType: "REPOSITORY",
+        buildType: "BRANCH",
         status: "RUNNING",
+        parentVersionId: parent.id,
         isCurrentVersion: true
       }
     });

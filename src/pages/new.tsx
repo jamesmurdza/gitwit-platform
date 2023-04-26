@@ -14,10 +14,8 @@ export default function NewProjectPage() {
           if (!name || !description) {
             return
           }
-          const result = await createProjectMutation({
-            description: description,
-            repositoryName: name,
-          })
+          // Start a build for a new project.
+          const result = await createProjectMutation({ description, name })
           await router.push(`/project/${result.id}`)
         }}
         title="Project"

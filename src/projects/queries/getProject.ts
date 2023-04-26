@@ -18,7 +18,9 @@ export default resolver.pipe(
         ownerId: await getUserId(ctx)
       }
     });
-    const build = await db.build.findFirst({ where: { projectId: id }, orderBy: { createdAt: "desc" } })
+
+    // Get the build for the current version of the project
+    const build = await db.build.findFirst({ where: { projectId: id, isCurrentVersion: true } })
     if (!project) throw new NotFoundError();
 
     return { ...project, build };

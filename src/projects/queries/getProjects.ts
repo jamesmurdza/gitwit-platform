@@ -31,8 +31,8 @@ export default resolver.pipe(
           where: whereUser,
           include: {
             Build: {
-              orderBy: {
-                createdAt: 'desc',
+              where: {
+                isCurrentVersion: true
               },
               take: 1,
             },

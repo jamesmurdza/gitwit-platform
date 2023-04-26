@@ -54,10 +54,10 @@ export function ProjectView() {
     return matches ? matches[1] : ""
   }
 
-  const fullRepositoryName = project.repositoryURL
-    ? getRegexMatch(/github\.com\/(.+)(\.git)?/, project.repositoryURL)
-    : null
-  const htmlRepositoryURL = getRegexMatch(/(.+)(\.git)?/, project.repositoryURL || "")
+  const htmlRepositoryURL = project.build?.outputHTMLURL
+  const regex = /\/\/github\.com\/([\w-]+)\/([\w-]+)(\/tree\/([\w-]+))?/
+  const [, repositoryUsername, repositoryName, , branchName] = htmlRepositoryURL?.match(regex) ?? []
+  const status = project.build!.status
 
   return (
     <>
@@ -78,11 +78,12 @@ export function ProjectView() {
                     {project.repositoryName}
                   </div>
                 </h1>
-                {project.repositoryURL && (
+                {htmlRepositoryURL && (
                   <div className="text-sm leading-6 text-gray-500 mt-1">
                     <a href={htmlRepositoryURL} target="_blank" rel="noreferrer">
-                      <FontAwesomeIcon icon={faGithub} /> {fullRepositoryName}
-                      <FontAwesomeIcon icon={faCodeBranch} className="ml-4" /> main
+                      <FontAwesomeIcon icon={faGithub} /> {repositoryUsername}/{repositoryName}
+                      <FontAwesomeIcon icon={faCodeBranch} className="ml-4" />{" "}
+                      {branchName || "main"}
                     </a>
                   </div>
                 )}
@@ -169,11 +170,11 @@ export function ProjectView() {
             </nav>
           </aside>
           <main className="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-12">
-            {(project.build == undefined || project.build.status == "RUNNING") && (
+            {project.build && (status === "PENDING" || status === "RUNNING") && (
               <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
                 <div className="px-4 py-5 sm:p-6">
                   <h3 className="text-base font-semibold leading-6 text-gray-900">
-                    {project.build ? "Build in progress" : "New project"}
+                    {status === "RUNNING" ? "Build in progress" : "New project"}
                   </h3>
                   <div className="mt-2 text-sm text-gray-500">
                     <p>
@@ -186,32 +187,7 @@ export function ProjectView() {
                 </div>
               </div>
             )}
-            {project.build && project.build.status == "SUCCESS" && (
-              <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-base font-semibold leading-6 text-gray-900">
-                    Add features or fix bugs
-                  </h3>
-                  <div className="mt-2 text-sm text-gray-500">
-                    <p>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus
-                      praesentium tenetur pariatur.
-                    </p>
-                  </div>
-                  <div className="mt-5">
-                    <a href={`/project/${project.id}/revise`}>
-                      <button
-                        type="button"
-                        className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                      >
-                        Make a revision
-                      </button>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            )}
-            {project.build && project.build.status == "FAILURE" && (
+            {project.build && status == "FAILURE" && (
               <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
                 <div className="px-4 py-5 sm:p-6">
                   <h3 className="text-base font-semibold leading-6 text-gray-900">Build failed</h3>
@@ -229,7 +205,32 @@ export function ProjectView() {
                 </div>
               </div>
             )}
-            {fullRepositoryName && (
+            {project.build && status == "SUCCESS" && (
+              <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
+                <div className="px-4 py-5 sm:p-6">
+                  <h3 className="text-base font-semibold leading-6 text-gray-900">
+                    Add features or fix bugs
+                  </h3>
+                  <div className="mt-2 text-sm text-gray-500">
+                    <p>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus
+                      praesentium tenetur pariatur.
+                    </p>
+                  </div>
+                  <div className="mt-5">
+                    <a href={`/version/${project.build.id}/new`}>
+                      <button
+                        type="button"
+                        className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                      >
+                        Make a revision
+                      </button>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
+            {repositoryName && (
               <>
                 <div className="sm:flex sm:items-center">
                   <div className="sm:flex-auto">
@@ -247,7 +248,7 @@ export function ProjectView() {
                     </button>
                   </div>
                 </div>
-                <FilePreview repositoryName={fullRepositoryName} />
+                <FilePreview repositoryName={`${repositoryUsername}/${repositoryName}`} />
               </>
             )}
           </main>

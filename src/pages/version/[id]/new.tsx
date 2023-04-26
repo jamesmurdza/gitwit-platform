@@ -1,11 +1,14 @@
 import Layout from "src/layouts/layout"
 import BuildForm from "src/components/buildForm"
-import createProject from "src/projects/mutations/createProject"
+import reviseProject from "src/projects/mutations/reviseProject"
 import { useMutation } from "@blitzjs/rpc"
+import { useParam } from "@blitzjs/next"
 import router from "next/router"
 
 export default function ReviseProjectPage() {
-  const [createProjectMutation] = useMutation(createProject)
+  const [reviseProjectMutation] = useMutation(reviseProject)
+  const idParam = useParam("id")
+  const parentVersionId = typeof idParam == "string" ? Number.parseInt(idParam) : undefined
 
   return (
     <>
@@ -15,9 +18,11 @@ export default function ReviseProjectPage() {
             if (!name || !description) {
               return
             }
-            const result = await createProjectMutation({
-              description: description,
-              repositoryName: name,
+            // Start a build for a new version of the project.
+            const result = await reviseProjectMutation({
+              description,
+              name,
+              parentVersionId,
             })
             await router.push(`/project/${result.id}`)
           }}
