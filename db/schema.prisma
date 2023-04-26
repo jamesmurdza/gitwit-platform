@@ -105,17 +105,26 @@ enum BuildStatus {
 }
 
 model Build {
-  id            Int         @id @default(autoincrement())
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  Project       Project     @relation(fields: [projectId], references: [id])
-  projectId     Int
-  buildType     BuildType
-  status        BuildStatus @default(PENDING)
-  gptModel      String?
-  gitwitVersion String?
-  buildLog      String?
-  buildError    String?
-  buildScript   String?
-  baseImage     String?
+  id               Int         @id @default(autoincrement())
+  name             String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  Project          Project     @relation(fields: [projectId], references: [id])
+  projectId        Int
+  buildType        BuildType
+  status           BuildStatus @default(PENDING)
+  userInput        String?
+  gptModel         String?
+  gitwitVersion    String?
+  buildLog         String?
+  buildError       String?
+  buildScript      String?
+  baseImage        String?
+  outputGitURL     String?
+  outputHTMLURL    String?
+  parentVersion    Build?      @relation(name: "ParentChild", fields: [parentVersionId], references: [id])
+  parentVersionId  Int?
+  children         Build[]     @relation(name: "ParentChild")
+  isInitialVersion Boolean     @default(false)
+  isCurrentVersion Boolean     @default(false)
 }
