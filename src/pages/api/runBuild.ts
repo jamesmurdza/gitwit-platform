@@ -23,6 +23,15 @@ export default Queue("api/runBuild", async (buildId: number) => {
 
   const project = build.Project;
   const defaultName = isBranch ? "new-feature" : "new-project"
+
+  let sourceBranch: string | undefined
+  if (isBranch) {
+    // Extract the branch name from the GitHub URL.
+    const regex = /\/\/github\.com\/([\w-]+)\/([\w-]+)(\/tree\/([\w-]+))?/
+    const [, repositoryUsername, repositoryName, , branchName] = build.parentVersion?.outputHTMLURL?.match(regex) ?? []
+    sourceBranch = branchName
+  }
+
   const input = {
     suggestedName: build.name ?? defaultName,
     userInput: build.userInput!,
@@ -31,6 +40,7 @@ export default Queue("api/runBuild", async (buildId: number) => {
     organization: process.env.GITHUB_ORGNAME,
     collaborator: project.owner.githubId ?? undefined,
     sourceGitURL: build.parentVersion?.outputGitURL ?? undefined,
+    sourceBranch: sourceBranch,
   }
 
   console.log(input)
