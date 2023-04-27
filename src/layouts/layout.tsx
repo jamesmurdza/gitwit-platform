@@ -8,6 +8,7 @@ import { useSupabase } from "../auth/supabase-provider"
 import Image from "next/image"
 import Head from "next/head"
 import { BlitzLayout } from "@blitzjs/next"
+import router from "next/router"
 
 const navigation = [
   { name: "Projects", href: "/projects", current: false },
@@ -22,14 +23,21 @@ function classNames(...classes) {
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
     <div className="bg-white h-screen flex flex-col items-center justify-center">
-      <div className="flex items-center">
-        <h1 className="text-2xl font-semibold border-r-2 border-gray-300 pr-4 mr-4">500</h1>
-        <div className="inline-block">
-          <h2 className="text-base font-normal leading-none">{error.message}</h2>
+      {!isSupabaseError(error) && (
+        <div className="flex items-center">
+          <h1 className="text-2xl font-semibold border-r-2 border-gray-300 pr-4 mr-4">500</h1>
+          <div className="inline-block">
+            <h2 className="text-base font-normal leading-none">{error.message}</h2>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
+}
+
+// Check if the error is due to the Supabase cookie not being set.
+const isSupabaseError = (error: Error) => {
+  return error.message.startsWith("Supabase cookie not found")
 }
 
 const PageLayout: BlitzLayout<{ title?: string; children?: React.ReactNode }> = ({
@@ -46,6 +54,14 @@ const PageLayout: BlitzLayout<{ title?: string; children?: React.ReactNode }> = 
 
   // If the GitHub auth token has expired, sign the user out.
   const handleError = async (error: Error, info: { componentStack: string }) => {
+    // This is a workaround to refresh the page once the Supabase cookie has been set.
+    if (isSupabaseError(error)) {
+      setInterval(() => {
+        if (window.location.hash === "") {
+          router.reload()
+        }
+      }, 100)
+    }
     if (error.name === "GitHubAuthenticationError") {
       await signOut()
     }
