@@ -26,6 +26,23 @@ function classNames(...classes) {
 }
 
 function ErrorFallback({ error, resetErrorBoundary }) {
+  const { supabase } = useSupabase()
+
+  // Check if the error is due to the Supabase cookie not being set.
+  const isSupabaseError = (error: Error) => {
+    return error.message.startsWith("Supabase cookie not found")
+  }
+
+  useEffect(() => {
+    if (isSupabaseError(error)) {
+      // Workaround to reload the page after setting the Supabase cookie.
+      supabase.auth
+        .getSession()
+        .then((session) => setTimeout(() => router.reload(), 0))
+        .catch((error) => console.log(error))
+    }
+  }, [supabase, error])
+
   return (
     <div className="bg-white h-screen flex flex-col items-center justify-center">
       {!isSupabaseError(error) && (
@@ -38,11 +55,6 @@ function ErrorFallback({ error, resetErrorBoundary }) {
       )}
     </div>
   )
-}
-
-// Check if the error is due to the Supabase cookie not being set.
-const isSupabaseError = (error: Error) => {
-  return error.message.startsWith("Supabase cookie not found")
 }
 
 const PageLayout: BlitzLayout<{ title?: string; children?: React.ReactNode }> = ({
@@ -59,14 +71,6 @@ const PageLayout: BlitzLayout<{ title?: string; children?: React.ReactNode }> = 
 
   // If the GitHub auth token has expired, sign the user out.
   const handleError = async (error: Error, info: { componentStack: string }) => {
-    // This is a workaround to refresh the page once the Supabase cookie has been set.
-    if (isSupabaseError(error)) {
-      setInterval(() => {
-        if (window.location.hash === "") {
-          router.reload()
-        }
-      }, 100)
-    }
     if (error.name === "GitHubAuthenticationError") {
       await signOut()
     }
