@@ -23,6 +23,8 @@ import getProject from "src/projects/queries/getProject"
 import Layout from "src/layouts/layout"
 import { FilePreview } from "src/components/filePreview"
 
+const isDemo: boolean = !!process.env.NEXT_PUBLIC_DEMO
+
 export default function ProjectPage() {
   return (
     <>
@@ -38,9 +40,14 @@ export default function ProjectPage() {
 export function ProjectView() {
   const secondaryNavigation = [
     { name: "Code", href: "#", icon: CodeBracketSquareIcon, current: true },
-    { name: "Versions", href: "#", icon: ClockIcon, current: false },
-    { name: "Logs", href: "#", icon: ExclamationTriangleIcon, ClockIcon: false },
-  ]
+  ].concat(
+    isDemo
+      ? [
+          { name: "Versions", href: "#", icon: ClockIcon, current: false },
+          { name: "Logs", href: "#", icon: ExclamationTriangleIcon, current: false },
+        ]
+      : []
+  )
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ")
   }
@@ -239,14 +246,16 @@ export function ProjectView() {
                       A preview of the source code in this project:
                     </p>
                   </div>
-                  <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                    <button
-                      type="button"
-                      className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                    >
-                      Add files
-                    </button>
-                  </div>
+                  {isDemo && (
+                    <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                      <button
+                        type="button"
+                        className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                      >
+                        Add files
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <FilePreview repositoryName={`${repositoryUsername}/${repositoryName}`} />
               </>
