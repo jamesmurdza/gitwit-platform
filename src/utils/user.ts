@@ -1,5 +1,5 @@
 import { Ctx } from 'blitz';
-import db from "db"
+import db, { GitHubUser } from "db"
 
 // This makes an authenticated request to the GitHub API.
 export const queryGitHub = async (ctx: Ctx, url: string, token?: string) => {
@@ -48,12 +48,34 @@ class GitHubAuthenticationError extends Error {
 }
 
 // This creates the signed in user if it doesn't exist, and returns its id.
-export const getUserId = async (ctx: Ctx) => {
+export const getUser = async (ctx: Ctx) => {
   const login = (await getUserData(ctx)).login;
 
   // If the GitHub auth token has expired, throw an error so the user is signed out.
   // We currently don't have a way to refresh the token.
   if (login === undefined) throw new GitHubAuthenticationError("Could not get user data");
 
-  return (await upsertUser(login)).id;
+  return await upsertUser(login);
+}
+
+export const getUserId = async (ctx: Ctx) => {
+  return (await getUser(ctx)).id
+}
+
+export default async function queryInvites(username) {
+  if (username) {
+    const user = await db.invite.findFirst({ where: { username } });
+    if (user) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export const verifyUser = async (user: GitHubUser) => {
+  // Throw an error if the user is not on the whitelist.
+  const userExists = await queryInvites(user.githubId);
+  if (!userExists) {
+    throw new Error("You must be invited to use this service.")
+  }
 }

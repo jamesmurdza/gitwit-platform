@@ -1,8 +1,8 @@
 import { resolver } from "@blitzjs/rpc";
 import db from "db";
 import { z } from "zod";
-import { getUserId } from "src/utils/user";
 import runBuildQueue from "src/pages/api/runBuild"
+import { getUser, verifyUser } from "src/utils/user";
 
 const CreateProject = z.object({
   description: z.string(),
@@ -13,11 +13,16 @@ export default resolver.pipe(
   resolver.zod(CreateProject),
   async (input, ctx) => {
 
+    const user = await getUser(ctx);
+
+    // Verify that the user is on the whitelist.
+    await verifyUser(user)
+
     const project = await db.project.create({
       data: {
         description: input.description,
         repositoryName: input.name,
-        ownerId: await getUserId(ctx)
+        ownerId: user.id
       }
     });
 
@@ -27,7 +32,7 @@ export default resolver.pipe(
 
     // Only one build can be marked as current.
     await db.build.updateMany({
-      where: { projectId: project.id },
+      where: { projectId: project.id, Project: { ownerId: user.id } },
       data: {
         isCurrentVersion: false,
       }

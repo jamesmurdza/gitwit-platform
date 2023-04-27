@@ -2,7 +2,7 @@ import { NotFoundError } from "blitz";
 import { resolver } from "@blitzjs/rpc";
 import db from "db";
 import { z } from "zod";
-import { getUserId } from "src/utils/user";
+import { getUser, verifyUser } from "src/utils/user";
 
 const GetProject = z.object({
   // This accepts type of undefined, but is required at runtime
@@ -12,10 +12,16 @@ const GetProject = z.object({
 export default resolver.pipe(
   resolver.zod(GetProject),
   async ({ id }, ctx) => {
+
+    const user = await getUser(ctx);
+
+    // Verify that the user is on the whitelist.
+    await verifyUser(user)
+
     const project = await db.project.findFirst({
       where: {
         id,
-        ownerId: await getUserId(ctx)
+        ownerId: user.id
       }
     });
 

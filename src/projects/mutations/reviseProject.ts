@@ -1,8 +1,8 @@
 import { resolver } from "@blitzjs/rpc";
 import db from "db";
 import { z } from "zod";
-import { getUserId } from "src/utils/user";
 import runBuildQueue from "src/pages/api/runBuild"
+import { getUser, verifyUser } from "src/utils/user";
 
 const ReviseProject = z.object({
   description: z.string(),
@@ -14,9 +14,17 @@ export default resolver.pipe(
   resolver.zod(ReviseProject),
   async (input, ctx) => {
 
+    const user = await getUser(ctx);
+
+    // Verify that the user is on the whitelist.
+    await verifyUser(user)
+
     const parent = await db.build.findFirst({
       where: {
-        id: input.parentVersionId
+        id: input.parentVersionId,
+        Project: {
+          ownerId: user.id
+        }
       },
       include: {
         Project: true

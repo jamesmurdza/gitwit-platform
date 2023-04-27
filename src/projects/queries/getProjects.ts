@@ -1,7 +1,7 @@
 import { paginate } from "blitz";
 import { resolver } from "@blitzjs/rpc";
 import db, { Prisma } from "db";
-import { getUserId } from "src/utils/user";
+import { getUser, verifyUser } from "src/utils/user";
 
 interface GetProjectsInput
   extends Pick<
@@ -11,9 +11,15 @@ interface GetProjectsInput
 
 export default resolver.pipe(
   async ({ where, orderBy, skip = 0, take = 100 }: GetProjectsInput, ctx) => {
+
+    const user = await getUser(ctx);
+
+    // Verify that the user is on the whitelist.
+    await verifyUser(user)
+
     const whereUser = {
       ...where,
-      ownerId: await getUserId(ctx),
+      ownerId: user.id,
       deleted: false
     };
     const {
