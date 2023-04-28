@@ -32,17 +32,22 @@ export default resolver.pipe(
 
     // Parse the GitHub URL
     const regex = /\/\/github\.com\/([\w-]+)\/([\w-]+)(\/tree\/([\w-]+))?/
-    const [, repositoryUsername, repositoryName, , branchName] = build.outputHTMLURL?.match(regex) ?? []
+    const [, repositoryUsername, repositoryName, , branchNameComponent] = build.outputHTMLURL?.match(regex) ?? []
+    const branchName = branchNameComponent ?? "main"
 
     // Because this repo is in an organization, the API needs to be accessed by an organization member.
     const project = await queryGitHub(
       ctx,
-      `https://api.github.com/repos/${repositoryUsername}/${repositoryName}/git/trees/${branchName ?? "main"}?recursive=1`,
+      `https://api.github.com/repos/${repositoryUsername}/${repositoryName}/git/trees/${branchName}?recursive=1`,
       process.env.GITHUB_TOKEN!
     )
     if (project.message) {
       throw new Error(`GitHub API: ${project.message}`)
     }
-    return project.tree.map(({ path }) => ({ path }))
+    return project.tree.map(({ path }) => ({
+      path,
+      htmlURL: `https://github.com/${repositoryUsername}/${repositoryName}/blob/${branchName}/${path}`,
+      rawURL: `https://raw.githubusercontent.com/${repositoryUsername}/${repositoryName}/${branchName}/${path}`
+    }))
   }
 );

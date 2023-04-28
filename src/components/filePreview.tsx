@@ -30,7 +30,12 @@ function FileTable(props) {
               {person.path}
             </td>
             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-              <a href="#" className="text-indigo-600 hover:text-indigo-900">
+              <a
+                href={person.htmlURL}
+                target="_blank"
+                className="text-indigo-600 hover:text-indigo-900"
+                rel="noreferrer"
+              >
                 View<span className="sr-only">, {person.path}</span>
               </a>
             </td>
