@@ -181,7 +181,7 @@ export function ProjectView() {
               <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
                 <div className="px-4 py-5 sm:p-6">
                   <h3 className="text-base font-semibold leading-6 text-gray-900">
-                    {status === "RUNNING" ? "Build in progress" : "New project"}
+                    {status === "RUNNING" ? "Build in progress" : "Build in queue"}
                   </h3>
                   <div className="mt-2 text-sm text-gray-500">
                     <p>
@@ -220,8 +220,8 @@ export function ProjectView() {
                   </h3>
                   <div className="mt-2 text-sm text-gray-500">
                     <p>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus
-                      praesentium tenetur pariatur.
+                      Make a new version of your project to implement changes such as new features,
+                      bug fixes, etc.
                     </p>
                   </div>
                   <div className="mt-5">
