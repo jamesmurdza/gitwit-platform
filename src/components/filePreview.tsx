@@ -5,7 +5,7 @@ import getProjectFiles from "src/projects/queries/getProjectFiles"
 function FileTable(props) {
   const [files, isLoading] = useQuery(
     getProjectFiles,
-    { repositoryName: props.repositoryName },
+    { buildId: props.buildId },
     { refetchInterval: 5000 }
   )
   return (
@@ -45,12 +45,12 @@ export function FilePreview(props) {
   const ohNo = ({ error }) => (
     <p className="mt-8 text-center text-sm font-medium">Something went wrong: {error.message}</p>
   )
-  return props.repositoryName == undefined ? null : (
+  return props.buildId == undefined ? null : (
     <ErrorBoundary FallbackComponent={ohNo}>
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <FileTable repositoryName={props.repositoryName} />
+            <FileTable buildId={props.buildId} />
           </div>
         </div>
       </div>

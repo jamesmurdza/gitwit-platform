@@ -257,7 +257,7 @@ export function ProjectView() {
                     </div>
                   )}
                 </div>
-                <FilePreview repositoryName={`${repositoryUsername}/${repositoryName}`} />
+                <FilePreview buildId={project.build?.id} />
               </>
             )}
           </main>
