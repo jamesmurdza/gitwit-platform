@@ -1,7 +1,8 @@
-import { Suspense, Fragment } from "react"
+import { Suspense, Fragment, useEffect, useState } from "react"
 import { useQuery } from "@blitzjs/rpc"
 import { useParam } from "@blitzjs/next"
 import Head from "next/head"
+import router from "next/router"
 
 import { Menu, Transition } from "@headlessui/react"
 import { BarLoader } from "react-spinners"
@@ -22,6 +23,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css"
 import getProject from "src/projects/queries/getProject"
 import Layout from "src/layouts/layout"
 import { FilePreview } from "src/components/filePreview"
+import { VersionHistory } from "src/components/versionHistory"
 
 const isDemo: boolean = !!process.env.NEXT_PUBLIC_DEMO
 
@@ -38,15 +40,13 @@ export default function ProjectPage() {
 }
 
 export function ProjectView() {
+  const [hash, setHash] = useState<any>(undefined)
+
   const secondaryNavigation = [
-    { name: "Code", href: "#", icon: CodeBracketSquareIcon, current: true },
+    { name: "Code", href: "#preview", icon: CodeBracketSquareIcon, current: hash !== "#history" },
+    { name: "History", href: "#history", icon: ClockIcon, current: hash === "#history" },
   ].concat(
-    isDemo
-      ? [
-          { name: "Versions", href: "#", icon: ClockIcon, current: false },
-          { name: "Logs", href: "#", icon: ExclamationTriangleIcon, current: false },
-        ]
-      : []
+    isDemo ? [{ name: "Logs", href: "#", icon: ExclamationTriangleIcon, current: false }] : []
   )
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ")
@@ -54,7 +54,16 @@ export function ProjectView() {
 
   const idParam = useParam("id")
   const id = typeof idParam == "string" ? Number.parseInt(idParam) : undefined
-  const [project, isLoading] = useQuery(getProject, { id }, { refetchInterval: 5000 })
+  const [project, { refetch }] = useQuery(getProject, { id }, { refetchInterval: 5000 })
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHash(window?.location.hash)
+    }
+    const handleHashChange = () => setHash(window?.location.hash)
+    window?.addEventListener("hashchange", handleHashChange)
+    return () => window?.removeEventListener("hashchange", handleHashChange)
+  }, [])
 
   const getRegexMatch = (regex: RegExp, string: string) => {
     const matches: RegExpExecArray | null = regex.exec(string)
@@ -66,7 +75,6 @@ export function ProjectView() {
   const [, repositoryUsername, repositoryName, , branchNameComponent] =
     htmlRepositoryURL?.match(regex) ?? []
   const branchName = branchNameComponent ?? "main"
-  const status = project.build!.status
 
   return (
     <>
@@ -182,92 +190,126 @@ export function ProjectView() {
             </nav>
           </aside>
           <main className="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-12">
-            {project.build && (status === "PENDING" || status === "RUNNING") && (
-              <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-base font-semibold leading-6 text-gray-900">
-                    {status === "RUNNING" ? "Build in progress" : "Build in queue"}
-                  </h3>
-                  <div className="mt-2 text-sm text-gray-500">
-                    <p>
-                      Your repository is being generated. This should take less than two minutes.
-                    </p>
-                  </div>
-                  <div className="mt-5 flex justify-center">
-                    <BarLoader />
-                  </div>
-                </div>
-              </div>
-            )}
-            {project.build && status == "FAILURE" && (
-              <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-base font-semibold leading-6 text-gray-900">Build failed</h3>
-                  <div className="mt-2 text-sm text-gray-500">
-                    <p>{project.build.buildError}</p>
-                  </div>
-                  <div className="mt-5">
-                    <button
-                      type="button"
-                      className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                    >
-                      Try again
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-            {project.build && status == "SUCCESS" && (
-              <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-base font-semibold leading-6 text-gray-900">
-                    Add features or fix bugs
-                  </h3>
-                  <div className="mt-2 text-sm text-gray-500">
-                    <p>
-                      Make a new version of your project to implement changes such as new features,
-                      bug fixes, etc.
-                    </p>
-                  </div>
-                  <div className="mt-5">
-                    <a href={`/version/${project.build.id}/new`}>
-                      <button
-                        type="button"
-                        className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                      >
-                        Make a revision
-                      </button>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            )}
-            {repositoryName && (
-              <>
-                <div className="sm:flex sm:items-center">
-                  <div className="sm:flex-auto">
-                    <h1 className="text-base font-semibold leading-6 text-gray-900">Preview</h1>
-                    <p className="mt-2 text-sm text-gray-700">
-                      A preview of the source code in this project:
-                    </p>
-                  </div>
-                  {isDemo && (
-                    <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                      <button
-                        type="button"
-                        className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                      >
-                        Add files
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <FilePreview buildId={project.build?.id} />
-              </>
+            {hash === "#history" ? (
+              <HistoryTab
+                projectId={project.id}
+                onVersionChange={async () => {
+                  await refetch()
+                  await router.push("#preview")
+                  setHash("#preview")
+                }}
+              />
+            ) : (
+              <CodeTab build={project.build} />
             )}
           </main>
         </div>
       </div>
+    </>
+  )
+}
+
+function CodeTab({ build }) {
+  const status = build.status
+  return (
+    <>
+      {build && (status === "PENDING" || status === "RUNNING") && (
+        <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
+          <div className="px-4 py-5 sm:p-6">
+            <h3 className="text-base font-semibold leading-6 text-gray-900">
+              {status === "RUNNING" ? "Build in progress" : "Build in queue"}
+            </h3>
+            <div className="mt-2 text-sm text-gray-500">
+              <p>Your repository is being generated. This should take less than two minutes.</p>
+            </div>
+            <div className="mt-5 flex justify-center">
+              <BarLoader />
+            </div>
+          </div>
+        </div>
+      )}
+      {build && status == "FAILURE" && (
+        <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
+          <div className="px-4 py-5 sm:p-6">
+            <h3 className="text-base font-semibold leading-6 text-gray-900">Build failed</h3>
+            <div className="mt-2 text-sm text-gray-500">
+              <p>{build.buildError}</p>
+            </div>
+            <div className="mt-5">
+              <button
+                type="button"
+                className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {build && status == "SUCCESS" && (
+        <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
+          <div className="px-4 py-5 sm:p-6">
+            <h3 className="text-base font-semibold leading-6 text-gray-900">
+              Add features or fix bugs
+            </h3>
+            <div className="mt-2 text-sm text-gray-500">
+              <p>
+                Make a new version of your project to implement changes such as new features, bug
+                fixes, etc.
+              </p>
+            </div>
+            <div className="mt-5">
+              <a href={`/version/${build.id}/new`}>
+                <button
+                  type="button"
+                  className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                >
+                  Make a revision
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+      {build?.outputHTMLURL && (
+        <>
+          <div className="sm:flex sm:items-center">
+            <div className="sm:flex-auto">
+              <h1 className="text-base font-semibold leading-6 text-gray-900">Preview</h1>
+              <p className="mt-2 text-sm text-gray-700">
+                A preview of the source code in this project:
+              </p>
+            </div>
+            {isDemo && (
+              <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                <button
+                  type="button"
+                  className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                >
+                  Add files
+                </button>
+              </div>
+            )}
+          </div>
+          <FilePreview buildId={build.id} />
+        </>
+      )}
+    </>
+  )
+}
+
+function HistoryTab({ projectId, onVersionChange }) {
+  return (
+    <>
+      <div className="sm:flex sm:items-center">
+        <div className="sm:flex-auto">
+          <h1 className="text-base font-semibold leading-6 text-gray-900">Revision history</h1>
+          <p className="mt-2 text-sm text-gray-700">
+            A history of all changes made to this project:
+          </p>
+        </div>
+      </div>
+      <VersionHistory projectId={projectId} onVersionChange={onVersionChange} />
     </>
   )
 }
