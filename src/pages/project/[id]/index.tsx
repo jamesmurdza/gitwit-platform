@@ -63,7 +63,9 @@ export function ProjectView() {
 
   const htmlRepositoryURL = project.build?.outputHTMLURL
   const regex = /\/\/github\.com\/([\w-]+)\/([\w-]+)(\/tree\/([\w-]+))?/
-  const [, repositoryUsername, repositoryName, , branchName] = htmlRepositoryURL?.match(regex) ?? []
+  const [, repositoryUsername, repositoryName, , branchNameComponent] =
+    htmlRepositoryURL?.match(regex) ?? []
+  const branchName = branchNameComponent ?? "main"
   const status = project.build!.status
 
   return (
@@ -89,22 +91,25 @@ export function ProjectView() {
                   <div className="text-sm leading-6 text-gray-500 mt-1">
                     <a href={htmlRepositoryURL} target="_blank" rel="noreferrer">
                       <FontAwesomeIcon icon={faGithub} /> {repositoryUsername}/{repositoryName}
-                      <FontAwesomeIcon icon={faCodeBranch} className="ml-4" />{" "}
-                      {branchName || "main"}
+                      <FontAwesomeIcon icon={faCodeBranch} className="ml-4" /> {branchName}
                     </a>
                   </div>
                 )}
               </div>
               <div className="flex items-center gap-x-4 sm:gap-x-6">
-                <button
-                  type="button"
+                <a
+                  href={htmlRepositoryURL!}
                   className="hidden text-sm font-semibold leading-6 text-gray-900 sm:block"
+                  target="_blank"
+                  rel="noreferrer"
                 >
                   View code
-                </button>
+                </a>
                 <a
-                  href="#"
+                  href={`https://github.com/codespaces/new?repo=${repositoryUsername}/${repositoryName}&ref=${branchName}`}
+                  target="_blank"
                   className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  rel="noreferrer"
                 >
                   Deploy
                 </a>
@@ -134,7 +139,7 @@ export function ProjectView() {
                               "block w-full px-3 py-1 text-left text-sm leading-6 text-gray-900"
                             )}
                           >
-                            View on GitHub
+                            View Code
                           </button>
                         )}
                       </Menu.Item>
