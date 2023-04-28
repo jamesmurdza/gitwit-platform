@@ -97,7 +97,9 @@ function ProjectsList() {
             </div>
             <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
               <div className="flex justify-between gap-x-4 py-3">
-                <dd className="text-gray-700">{project.description}</dd>
+                <dd className="text-gray-700 max-h-[70px] overflow-hidden">
+                  {project.description}
+                </dd>
               </div>
             </dl>
           </li>
