@@ -15,6 +15,7 @@ import {
   ClockIcon,
   ExclamationTriangleIcon,
   FolderIcon,
+  Bars4Icon,
 } from "@heroicons/react/24/outline"
 
 // This causes the Font Awesome icons to size down properly:
@@ -24,6 +25,7 @@ import getProject from "src/projects/queries/getProject"
 import Layout from "src/layouts/layout"
 import { FilePreview } from "src/components/filePreview"
 import { VersionHistory } from "src/components/versionHistory"
+import { BuildLogs } from "src/components/buildLogs"
 
 const isDemo: boolean = !!process.env.NEXT_PUBLIC_DEMO
 
@@ -42,9 +44,16 @@ export default function ProjectPage() {
 export function ProjectView() {
   const [hash, setHash] = useState<any>(undefined)
 
+  const currentPage = hash ? hash.substring(1) : "preview"
   const secondaryNavigation = [
-    { name: "Code", href: "#preview", icon: CodeBracketSquareIcon, current: hash !== "#history" },
-    { name: "History", href: "#history", icon: ClockIcon, current: hash === "#history" },
+    {
+      name: "Code",
+      href: "#preview",
+      icon: CodeBracketSquareIcon,
+      current: currentPage === "preview",
+    },
+    { name: "History", href: "#history", icon: ClockIcon, current: currentPage === "history" },
+    { name: "Logs", href: "#logs", icon: Bars4Icon, current: currentPage === "logs" },
   ].concat(
     isDemo ? [{ name: "Logs", href: "#", icon: ExclamationTriangleIcon, current: false }] : []
   )
@@ -199,6 +208,8 @@ export function ProjectView() {
                   setHash("#preview")
                 }}
               />
+            ) : hash === "#logs" ? (
+              <LogsTab buildId={project.build?.id} />
             ) : (
               <CodeTab build={project.build} />
             )}
@@ -310,6 +321,22 @@ function HistoryTab({ projectId, onVersionChange }) {
         </div>
       </div>
       <VersionHistory projectId={projectId} onVersionChange={onVersionChange} />
+    </>
+  )
+}
+
+function LogsTab({ buildId }) {
+  return (
+    <>
+      <div className="sm:flex sm:items-center">
+        <div className="sm:flex-auto">
+          <h1 className="text-base font-semibold leading-6 text-gray-900">Build logs</h1>
+          <p className="mt-2 text-sm text-gray-700">
+            Logs from when this version of the project was generated:
+          </p>
+        </div>
+      </div>
+      <BuildLogs buildId={buildId} />
     </>
   )
 }
