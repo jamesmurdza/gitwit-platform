@@ -1,5 +1,5 @@
 import { Suspense, Fragment, useEffect, useState } from "react"
-import { useQuery } from "@blitzjs/rpc"
+import { useQuery, useMutation } from "@blitzjs/rpc"
 import { useParam } from "@blitzjs/next"
 import Head from "next/head"
 import router from "next/router"
@@ -20,8 +20,9 @@ import {
 
 // This causes the Font Awesome icons to size down properly:
 import "@fortawesome/fontawesome-svg-core/styles.css"
-
 import getProject from "src/projects/queries/getProject"
+import restartBuild from "src/projects/mutations/restartBuild"
+
 import Layout from "src/layouts/layout"
 import { FilePreview } from "src/components/filePreview"
 import { VersionHistory } from "src/components/versionHistory"
@@ -84,6 +85,12 @@ export function ProjectView() {
   const [, repositoryUsername, repositoryName, , branchNameComponent] =
     htmlRepositoryURL?.match(regex) ?? []
   const branchName = branchNameComponent ?? "main"
+
+  const [restartBuildMutation, { isLoading, error }] = useMutation(restartBuild)
+  const tryAgain = async () => {
+    const result = await restartBuildMutation({ id: project.build!.id })
+    await refetch()
+  }
 
   return (
     <>
@@ -211,7 +218,7 @@ export function ProjectView() {
             ) : hash === "#logs" ? (
               <LogsTab buildId={project.build?.id} />
             ) : (
-              <CodeTab build={project.build} />
+              <CodeTab build={project.build} tryAgain={tryAgain} />
             )}
           </main>
         </div>
@@ -220,7 +227,7 @@ export function ProjectView() {
   )
 }
 
-function CodeTab({ build }) {
+function CodeTab({ build, tryAgain }) {
   const status = build.status
   return (
     <>
@@ -250,6 +257,7 @@ function CodeTab({ build }) {
               <button
                 type="button"
                 className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                onClick={tryAgain}
               >
                 Try again
               </button>
