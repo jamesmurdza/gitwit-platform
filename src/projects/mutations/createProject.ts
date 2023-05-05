@@ -2,7 +2,7 @@ import { resolver } from "@blitzjs/rpc";
 import db from "db";
 import { z } from "zod";
 import runBuildQueue from "src/pages/api/runBuild"
-import { getUser, verifyUser } from "src/utils/user";
+import { getUser, verifyUser, rateLimitUser } from "src/utils/user";
 
 const CreateProject = z.object({
   description: z.string(),
@@ -17,6 +17,9 @@ export default resolver.pipe(
 
     // Verify that the user is on the whitelist.
     await verifyUser(user)
+
+    // Rate limit the user's builds.
+    await rateLimitUser(user)
 
     const project = await db.project.create({
       data: {

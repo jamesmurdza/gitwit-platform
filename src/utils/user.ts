@@ -79,3 +79,29 @@ export const verifyUser = async (user: GitHubUser) => {
     throw new Error("You must be invited to use this service.")
   }
 }
+
+export const rateLimitUser = async (user: GitHubUser) => {
+
+  // Limit users to 15 builds in 30 minutes.
+  const rateLimit = 15;
+  const rateLimitPeriod = 30;
+
+  const rateLimitPeriodStart = new Date(Date.now() - rateLimitPeriod * 60 * 1000);
+  const recentBuilds = await db.build.findMany({
+    where: {
+      Project: {
+        ownerId: user.id
+      },
+      createdAt: {
+        gte: rateLimitPeriodStart
+      }
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+  if (recentBuilds.length >= rateLimit) {
+    throw new Error("Too many builds in a short period of time. Please wait a few minutes and try again or email contact@gitwit.dev to have your quota increased.")
+  }
+
+}
