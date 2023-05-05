@@ -47,14 +47,21 @@ export default Queue("api/runBuild", async (buildId: number) => {
   try {
 
     let gitwitProject = new Build(input)
-    let { outputGitURL, outputHTMLURL, buildScript, buildLog } = await gitwitProject.buildAndPush()
+    let { outputGitURL, outputHTMLURL, buildScript, buildLog, completionId, gptModel, gitwitVersion } = await gitwitProject.buildAndPush()
+
+    // PostgreSQL doesn't support storing NULL (\0x00) characters in text fields.
+    // https://stackoverflow.com/questions/1347646/
+    const cleanString = (str: string) => str.replace(/\0/g, '');
 
     await db.build.update({
       where: { id: build.id },
       data: {
         status: "SUCCESS",
-        buildScript,
-        buildLog,
+        buildScript: cleanString(buildScript),
+        buildLog: cleanString(buildLog),
+        gptModel,
+        gitwitVersion,
+        completionId,
         outputGitURL,
         outputHTMLURL
       }
