@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react"
 import router from "next/router"
 
+import { Switch } from "@headlessui/react"
+import { XCircleIcon } from "@heroicons/react/20/solid"
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ")
+}
+
 export default function BuildForm(props) {
   const stacks = ["ReactJS", "NextJS", "Django", "Python"]
   const isBranch = props.parent !== undefined
@@ -41,6 +48,26 @@ export default function BuildForm(props) {
               </div>
 
               <div className="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
+                {props.error && (
+                  <div className="rounded-md bg-red-50 p-4 col-span-full">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
+                      </div>
+                      <div className="ml-3">
+                        <h3 className="text-sm font-medium text-red-800">
+                          There was an error with your submission
+                        </h3>
+                        <div className="mt-2 text-sm text-red-700">
+                          <ul role="list" className="list-disc space-y-1 pl-5">
+                            <li>{props.error.message}</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {!isBranch && (
                   <div className="col-span-full">
                     <label
@@ -63,9 +90,6 @@ export default function BuildForm(props) {
                         </button>
                       ))}
                     </div>
-                    <p className="mt-3 text-sm leading-6 text-gray-600">
-                      Write a few sentences describing the project you would like to create.
-                    </p>
                   </div>
                 )}
 
@@ -149,7 +173,10 @@ export default function BuildForm(props) {
             </button>
             <button
               type="submit"
-              className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className={`rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
+                props.isLoading ? "opacity-60 pointer-events-none" : ""
+              }`}
+              disabled={props.isLoading}
             >
               Create
             </button>

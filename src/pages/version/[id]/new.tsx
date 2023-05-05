@@ -6,7 +6,7 @@ import { useParam } from "@blitzjs/next"
 import router from "next/router"
 
 export default function ReviseProjectPage() {
-  const [reviseProjectMutation] = useMutation(reviseProject)
+  const [reviseProjectMutation, { isLoading, error }] = useMutation(reviseProject)
   const idParam = useParam("id", "string")
   const parentVersionId = Number.parseInt(idParam!)
 
@@ -28,7 +28,9 @@ export default function ReviseProjectPage() {
           }}
           title="New revision"
           instructions="Modify project code to add features, fix bugs, or make other improvements."
-          parent={22}
+          parent={parentVersionId}
+          isLoading={isLoading}
+          error={error}
         />
       </Layout>
     </>

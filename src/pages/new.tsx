@@ -5,7 +5,7 @@ import { useMutation } from "@blitzjs/rpc"
 import router from "next/router"
 
 export default function NewProjectPage() {
-  const [createProjectMutation] = useMutation(createProject)
+  const [createProjectMutation, { isLoading, error }] = useMutation(createProject)
 
   return (
     <Layout title="New Project">
@@ -20,6 +20,8 @@ export default function NewProjectPage() {
         }}
         title="Project"
         instructions="Generate a base repository upon which to make further code additions."
+        isLoading={isLoading}
+        error={error}
       />
     </Layout>
   )
