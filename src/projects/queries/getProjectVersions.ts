@@ -3,7 +3,6 @@ import { resolver } from "@blitzjs/rpc";
 import db from "db";
 import { z } from "zod";
 import { getUser, verifyUser } from "src/utils/user";
-import { create } from "domain";
 
 const GetProjectVersions = z.object({
   // This accepts type of undefined, but is required at runtime
@@ -35,6 +34,7 @@ export default resolver.pipe(
         createdAt: true,
         outputHTMLURL: true,
         status: true,
+        isCurrentVersion: true,
       }, orderBy: { createdAt: "desc" }
     })
 

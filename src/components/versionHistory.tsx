@@ -53,7 +53,9 @@ function HistoryTable(props) {
               {formatDate(version.createdAt)}
             </td>
             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-              {version.outputHTMLURL ? (
+              {version.isCurrentVersion ? (
+                <span>Current version</span>
+              ) : version.outputHTMLURL ? (
                 <button
                   className="text-indigo-600 hover:text-indigo-900"
                   onClick={async () => {
