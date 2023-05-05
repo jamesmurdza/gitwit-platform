@@ -119,6 +119,7 @@ model Build {
   buildLog         String?
   buildError       String?
   buildScript      String?
+  completionId     String?
   baseImage        String?
   outputGitURL     String?
   outputHTMLURL    String?
