@@ -62,21 +62,10 @@ export const getUserId = async (ctx: Ctx) => {
   return (await getUser(ctx)).id
 }
 
-export default async function queryInvites(username) {
-  if (username) {
-    const user = await db.invite.findFirst({ where: { username } });
-    if (user) {
-      return true;
-    }
-  }
-  return false;
-}
-
 export const verifyUser = async (user: GitHubUser) => {
-  // Throw an error if the user is not on the whitelist.
-  const userExists = await queryInvites(user.githubId);
-  if (!userExists) {
-    throw new Error("You must be invited to use this service.")
+  // Throw an error if the user is not logged in.
+  if (!user.githubId) {
+    throw new Error("You do not have access to this service.")
   }
 }
 
