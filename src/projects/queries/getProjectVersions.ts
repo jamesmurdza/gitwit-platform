@@ -35,6 +35,7 @@ export default resolver.pipe(
         outputHTMLURL: true,
         status: true,
         isCurrentVersion: true,
+        userInput: true,
       }, orderBy: { createdAt: "desc" }
     })
 

@@ -22,6 +22,10 @@ function HistoryTable(props) {
     return status.toLowerCase().replace(/^\w/, (c) => c.toUpperCase())
   }
 
+  const trimString = (str, length) => {
+    return str.length > length ? str.substring(0, length - 3) + "..." : str
+  }
+
   return (
     <table className="min-w-full divide-y divide-gray-300">
       <thead>
@@ -36,25 +40,37 @@ function HistoryTable(props) {
             scope="col"
             className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
           >
+            Input
+          </th>
+          <th
+            scope="col"
+            className="py-3.5 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+          >
             Date
           </th>
-          <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
-            <span className="sr-only">Use version</span>
+          <th
+            scope="col"
+            className="py-3.5 pl-4 text-right text-sm font-semibold text-gray-900 sm:pl-0"
+          >
+            Status
           </th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-200">
         {versions.map((version) => (
           <tr key={version.name}>
-            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
+            <td className="whitespace-normal py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
               {version.name}
+            </td>
+            <td className="whitespace-normal py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
+              {trimString(version.userInput, 35)}
             </td>
             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
               {formatDate(version.createdAt)}
             </td>
-            <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+            <td className="relative whitespace-nowrap py-4 pl-3 text-right text-sm">
               {version.isCurrentVersion ? (
-                <span>Current version</span>
+                <span>Current</span>
               ) : version.outputHTMLURL ? (
                 <button
                   className="text-indigo-600 hover:text-indigo-900"
