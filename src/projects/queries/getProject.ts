@@ -24,10 +24,18 @@ export default resolver.pipe(
         ownerId: user.id
       }
     });
+    if (!project) throw new NotFoundError();
 
     // Get the build for the current version of the project
-    const build = await db.build.findFirst({ where: { projectId: id, isCurrentVersion: true } })
-    if (!project) throw new NotFoundError();
+    const build = await db.build.findFirst({
+      where: { projectId: id, isCurrentVersion: true },
+      select: {
+        id: true,
+        outputHTMLURL: true,
+        status: true,
+        buildError: true,
+      }
+    })
 
     return { ...project, build };
   }
