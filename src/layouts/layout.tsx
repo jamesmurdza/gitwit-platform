@@ -204,6 +204,20 @@ const PageLayout: BlitzLayout<{ title?: string; children?: React.ReactNode }> = 
                           <Menu.Item>
                             {({ active }) => (
                               <a
+                                href="mailto:contact@gitwit.dev?subject=GitWit%20Feedback"
+                                className={classNames(
+                                  active ? "bg-gray-100" : "",
+                                  "block px-4 py-2 text-sm text-gray-700"
+                                )}
+                                rel="noreferrer"
+                              >
+                                Send feedback
+                              </a>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <a
                                 href="#"
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
