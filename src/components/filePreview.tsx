@@ -6,7 +6,7 @@ function FileTable(props) {
   const [files, isLoading] = useQuery(
     getProjectFiles,
     { buildId: props.buildId },
-    { refetchInterval: 5000 }
+    { refetchInterval: 10000 }
   )
   return (
     <table className="min-w-full divide-y divide-gray-300">
