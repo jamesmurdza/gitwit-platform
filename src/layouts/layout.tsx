@@ -12,7 +12,10 @@ import router from "next/router"
 
 const isDemo: boolean = !!process.env.NEXT_PUBLIC_DEMO
 
-const navigation = [{ name: "Projects", href: "/projects", current: false }].concat(
+const navigation = [
+  { name: "Projects", href: "/projects", current: false },
+  { name: "Help", href: "https://blog.gitwit.dev", current: false, target: "_blank" },
+].concat(
   isDemo
     ? [
         { name: "Explore", href: "/explore", current: false },
@@ -133,6 +136,7 @@ const PageLayout: BlitzLayout<{ title?: string; children?: React.ReactNode }> = 
                         <a
                           key={item.name}
                           href={item.href}
+                          target={item.target}
                           className={classNames(
                             item.current
                               ? "bg-gray-900 text-white"
