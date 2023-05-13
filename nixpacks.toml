@@ -3,5 +3,6 @@ onlyIncludeFiles = [
   ".npmrc",
   "package.json",
   "yarn.lock",
-  "db/schema.prisma"
+  "db/schema.prisma",
+  "lib/gitwit"
 ]
