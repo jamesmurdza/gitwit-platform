@@ -95,6 +95,7 @@ model Project {
 enum BuildType {
   REPOSITORY
   BRANCH
+  TEMPLATE
 }
 
 enum BuildStatus {
@@ -128,4 +129,5 @@ model Build {
   children         Build[]     @relation(name: "ParentChild")
   isInitialVersion Boolean     @default(false)
   isCurrentVersion Boolean     @default(false)
+  templateGitURL   String?
 }
