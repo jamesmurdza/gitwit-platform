@@ -3,22 +3,52 @@ import router from "next/router"
 
 import { Switch } from "@headlessui/react"
 import { XCircleIcon } from "@heroicons/react/20/solid"
+import { RadioGroup } from "@headlessui/react"
+import { CheckCircleIcon } from "@heroicons/react/20/solid"
+import { generateName } from "src/utils/generateName"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
+const templates = [
+  {
+    id: "react-nextjs",
+    title: "React + NextJS",
+    description: "A React app using npm.",
+  },
+  {
+    id: "python",
+    title: "Python",
+    description: "A Python app using pip.",
+  },
+  {
+    id: "custom",
+    title: "Custom",
+    description: "Your custom stack.",
+  },
+]
+
 export default function BuildForm(props) {
-  const stacks = ["ReactJS", "NextJS", "Django", "Python"]
+  const [selectedTemplates, setSelectedTemplates] = useState(templates[0])
   const isBranch = props.parent !== undefined
 
   const [description, setDescription] = useState("")
   const [name, setName] = useState("")
   const [nameEdited, setNameEdited] = useState(false)
+  const [placeholder, setPlaceholder] = useState("")
+  useEffect(() => {
+    setPlaceholder(generateName())
+  }, [])
 
   const onSubmit = async (event) => {
     event.preventDefault()
-    props.onSubmit({ name, description })
+    const template = selectedTemplates?.id
+    props.onSubmit({
+      name: name || placeholder,
+      description: description || selectedTemplates?.description,
+      ...(template !== "custom" && { template }),
+    })
   }
 
   useEffect(() => {
@@ -74,52 +104,95 @@ export default function BuildForm(props) {
                       htmlFor="about"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Tech Stack
+                      Project base
                     </label>
                     <div className="mt-2">
-                      {stacks.map((stack, index) => (
-                        <button
-                          type="button"
-                          key={index}
-                          onClick={() => {
-                            setDescription(description + stack + " ")
-                          }}
-                          className="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800 mx-2"
-                        >
-                          {stack}
-                        </button>
-                      ))}
+                      <RadioGroup value={selectedTemplates} onChange={setSelectedTemplates}>
+                        <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-4">
+                          {templates.map((mailingList) => (
+                            <RadioGroup.Option
+                              key={mailingList.id}
+                              value={mailingList}
+                              className={({ checked, active }) =>
+                                classNames(
+                                  checked ? "border-transparent" : "border-gray-300",
+                                  active ? "border-indigo-600 ring-2 ring-indigo-600" : "",
+                                  "relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none"
+                                )
+                              }
+                            >
+                              {({ checked, active }) => (
+                                <>
+                                  <span className="flex flex-1">
+                                    <span className="flex flex-col">
+                                      <RadioGroup.Label
+                                        as="span"
+                                        className="block text-sm font-medium text-gray-900"
+                                      >
+                                        {mailingList.title}
+                                      </RadioGroup.Label>
+                                      <RadioGroup.Description
+                                        as="span"
+                                        className="mt-1 flex items-center text-sm text-gray-500"
+                                      >
+                                        {mailingList.description}
+                                      </RadioGroup.Description>
+                                    </span>
+                                  </span>
+                                  <CheckCircleIcon
+                                    className={classNames(
+                                      !checked ? "invisible" : "",
+                                      "h-5 w-5 text-indigo-600"
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                  <span
+                                    className={classNames(
+                                      active ? "border" : "border-2",
+                                      checked ? "border-indigo-600" : "border-transparent",
+                                      "pointer-events-none absolute -inset-px rounded-lg"
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                </>
+                              )}
+                            </RadioGroup.Option>
+                          ))}
+                        </div>
+                      </RadioGroup>
                     </div>
                   </div>
                 )}
 
-                <div className="col-span-full">
-                  <label
-                    htmlFor="about"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Project {isBranch ? "modifications" : "requirements"}
-                  </label>
-                  <div className="mt-2">
-                    <textarea
-                      id="about"
-                      name="about"
-                      rows={3}
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      defaultValue={""}
-                      value={description}
-                      onChange={(e) => {
-                        const input = e.target.value
-                        setDescription(input)
-                      }}
-                    />
+                {(isBranch || selectedTemplates?.id === "custom") && (
+                  <div className="col-span-full">
+                    <label
+                      htmlFor="about"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      {isBranch ? "Project modifications" : "Custom requirements"}
+                    </label>
+                    <div className="mt-2">
+                      <textarea
+                        id="about"
+                        name="about"
+                        rows={3}
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        defaultValue={""}
+                        value={description}
+                        onChange={(e) => {
+                          const input = e.target.value
+                          setDescription(input)
+                        }}
+                      />
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-gray-600">
+                      {isBranch
+                        ? "Write a few sentences describing the changes you would like to make."
+                        : "Write a few sentences describing the project you would like to create."}
+                    </p>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-gray-600">
-                    {isBranch
-                      ? "Write a few sentences describing the changes you would like to make."
-                      : "Write a few sentences describing the project you would like to create."}
-                  </p>
-                </div>
+                )}
                 <div className="sm:col-span-4">
                   <label
                     htmlFor="website"
@@ -142,7 +215,7 @@ export default function BuildForm(props) {
                           "block flex-1 border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" +
                           (isBranch ? "" : "pl-0")
                         }
-                        placeholder={isBranch ? "branch-name" : "repository-name"}
+                        placeholder={isBranch ? "branch-name" : placeholder}
                         value={name}
                         onChange={(e) => {
                           setName(e.target.value)

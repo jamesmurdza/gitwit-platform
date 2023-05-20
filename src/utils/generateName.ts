@@ -1,0 +1,66 @@
+const adjectives = [
+  "gentle",
+  "happy",
+  "friendly",
+  "silly",
+  "charming",
+  "sweet",
+  "playful",
+  "grumpy",
+  "sleepy",
+  "clumsy",
+  "earnest",
+  "sleepy",
+  "bashful",
+  "dopey",
+  "sneezy",
+  "sassy",
+  "curious",
+  "shy",
+  "nerdy",
+  "nervous",
+  "cuddly",
+  "bookish",
+  "daring",
+  "careful",
+  "helpful",
+  "loyal",
+  "anxious",
+  "antsy",
+  "timid",
+  "lively",
+  "jolly",
+  "peppy",
+  "perky",
+  "zesty"
+]
+
+const dinosaurs = [
+  "tyrannosaur",
+  "velociraptor",
+  "triceratops",
+  "stegosaur",
+  "brachiosaur",
+  "allosaur",
+  "apatosaur",
+  "diplodocus",
+  "spinosaur",
+  "ankylosaur",
+  "iguanodon",
+  "pterodactyl",
+  "edmontosaur",
+  "pteranodon",
+  "oviraptor",
+  "megaraptor",
+  "protoceratops",
+  "microraptor",
+  "troodon",
+  "smilodon",
+  "plesiosaur",
+]
+
+export const generateName = () => {
+  const adjective = adjectives[Math.floor(Math.random() * adjectives.length)]
+  const dinosaur = dinosaurs[Math.floor(Math.random() * dinosaurs.length)]
+  return `${adjective}-${dinosaur}`
+}

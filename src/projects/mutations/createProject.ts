@@ -7,7 +7,13 @@ import { getUser, verifyUser, rateLimitUser } from "src/utils/user";
 const CreateProject = z.object({
   description: z.string(),
   name: z.string(),
+  template: z.string().optional(),
 });
+
+const templates = {
+  "react-nextjs": "https://github.com/gitwitdev/react-nextjs-base.git",
+  "python": "https://github.com/gitwitdev/python-base.git",
+}
 
 export default resolver.pipe(
   resolver.zod(CreateProject),
@@ -47,9 +53,10 @@ export default resolver.pipe(
         projectId: project.id,
         name: input.name,
         userInput: input.description,
-        buildType: "REPOSITORY",
+        buildType: input.template ? "TEMPLATE" : "REPOSITORY",
         status: "RUNNING",
-        isCurrentVersion: true
+        isCurrentVersion: true,
+        ...(input.template && { templateGitURL: templates[input.template] }),
       }
     });
     await runBuildQueue.enqueue(build.id)

@@ -39,7 +39,7 @@ export default Queue("api/runBuild", async (buildId: number) => {
     creator: process.env.GITHUB_USERNAME!,
     organization: process.env.GITHUB_ORGNAME,
     collaborator: project.owner.githubId ?? undefined,
-    sourceGitURL: build.parentVersion?.outputGitURL ?? undefined,
+    sourceGitURL: build.templateGitURL ?? build.parentVersion?.outputGitURL ?? undefined,
     sourceBranch: sourceBranch,
   }
 
@@ -57,8 +57,8 @@ export default Queue("api/runBuild", async (buildId: number) => {
       where: { id: build.id },
       data: {
         status: "SUCCESS",
-        buildScript: cleanString(buildScript),
-        buildLog: cleanString(buildLog),
+        buildScript: buildScript ? cleanString(buildScript) : undefined,
+        buildLog: buildLog ? cleanString(buildLog) : undefined,
         gptModel,
         gitwitVersion,
         completionId,

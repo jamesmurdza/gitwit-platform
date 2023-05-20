@@ -10,12 +10,12 @@ export default function NewProjectPage() {
   return (
     <Layout title="New Project">
       <BuildForm
-        onSubmit={async ({ name, description }) => {
-          if (!name || !description) {
+        onSubmit={async ({ name, description, template }) => {
+          if (!name || (!description && !template)) {
             return
           }
           // Start a build for a new project.
-          const result = await createProjectMutation({ description, name })
+          const result = await createProjectMutation({ description, name, template })
           await router.push(`/project/${result.id}`)
         }}
         title="Project"
