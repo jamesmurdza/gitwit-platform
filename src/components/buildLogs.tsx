@@ -12,7 +12,7 @@ function BuildLogTable(props) {
       <Disclosure as="div" className="mt-2" defaultOpen={true}>
         {({ open }) => (
           <>
-            <Disclosure.Button className="flex w-full justify-between rounded-lg bg-gray-200 px-4 py-2 text-left text-sm font-medium hover:bg-gray-300 focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
+            <Disclosure.Button className="flex w-full justify-between rounded-lg border-gray-900/5 bg-gray-50 px-4 py-2 text-left text-sm font-medium  focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
               <span>Build output</span>
               <ChevronUpIcon
                 className={`${open ? "rotate-180 transform" : ""} h-5 w-5 text-gray-500`}
@@ -29,7 +29,7 @@ function BuildLogTable(props) {
       <Disclosure as="div" className="mt-2" defaultOpen={true}>
         {({ open }) => (
           <>
-            <Disclosure.Button className="flex w-full justify-between rounded-lg bg-gray-200 px-4 py-2 text-left text-sm font-medium hover:bg-gray-300 focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
+            <Disclosure.Button className="flex w-full justify-between rounded-lg border-gray-900/5 bg-gray-50 px-4 py-2 text-left text-sm font-medium  focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
               <span>Build script</span>
               <ChevronUpIcon
                 className={`${open ? "rotate-180 transform" : ""} h-5 w-5 text-gray-500`}
