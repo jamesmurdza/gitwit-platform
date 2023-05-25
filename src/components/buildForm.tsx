@@ -44,7 +44,7 @@ export default function BuildForm(props) {
   const onSubmit = async (event) => {
     event.preventDefault()
     const template = selectedTemplates?.id
-    const templateName = template !== "custom" && template
+    const templateName = template !== "custom" ? template : undefined
     props.onSubmit({
       name: name || placeholder,
       description: description || (templateName && selectedTemplates?.description),
