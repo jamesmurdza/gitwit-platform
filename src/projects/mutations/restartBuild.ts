@@ -34,6 +34,7 @@ export default resolver.pipe(
         Project: true,
         parentVersionId: true,
         isInitialVersion: true,
+        templateGitURL: true
       }
     });
 
@@ -58,6 +59,7 @@ export default resolver.pipe(
         buildType: failedBuild.buildType,
         parentVersionId: failedBuild.parentVersionId,
         isInitialVersion: failedBuild.isInitialVersion,
+        templateGitURL: failedBuild.templateGitURL,
         status: "RUNNING",
         isCurrentVersion: true
       }
