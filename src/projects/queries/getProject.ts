@@ -7,11 +7,12 @@ import { getUser, verifyUser } from "src/utils/user";
 const GetProject = z.object({
   // This accepts type of undefined, but is required at runtime
   id: z.number().optional().refine(Boolean, "Required"),
+  versionId: z.number().refine(Boolean).optional(),
 });
 
 export default resolver.pipe(
   resolver.zod(GetProject),
-  async ({ id }, ctx) => {
+  async ({ id, versionId }, ctx) => {
 
     const user = await getUser(ctx);
 
@@ -26,14 +27,17 @@ export default resolver.pipe(
     });
     if (!project) throw new NotFoundError();
 
-    // Get the build for the current version of the project
+    // Get the build for the specified version of the project, or the current if unspecified.
     const build = await db.build.findFirst({
-      where: { projectId: id, isCurrentVersion: true },
+      where: versionId
+        ? { projectId: id, id: versionId }
+        : { projectId: id, isCurrentVersion: true },
       select: {
         id: true,
         outputHTMLURL: true,
         status: true,
         buildError: true,
+        projectId: true
       }
     })
 

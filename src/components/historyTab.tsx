@@ -1,8 +1,10 @@
 import { ErrorBoundary } from "@blitzjs/next"
 import { useQuery, useMutation } from "@blitzjs/rpc"
+
 import getProjectVersions from "src/projects/queries/getProjectVersions"
 import setCurrentVersion from "src/projects/mutations/setCurrentVersion"
 
+// This is the table that shows past revisions of a project.
 function HistoryTable(props) {
   const [versions, isLoading] = useQuery(getProjectVersions, { id: props.projectId })
   const [setCurrentVersionMutation] = useMutation(setCurrentVersion)
@@ -18,10 +20,12 @@ function HistoryTable(props) {
     return formattedDate
   }
 
+  // Convert string from STATUS to Status
   const formatStatus = (status) => {
     return status.toLowerCase().replace(/^\w/, (c) => c.toUpperCase())
   }
 
+  // Truncate string to length and add ellipsis
   const trimString = (str, length) => {
     return str.length > length ? str.substring(0, length - 3) + "..." : str
   }
@@ -92,20 +96,35 @@ function HistoryTable(props) {
   )
 }
 
-// Catch errors and display a fallback UI
-export function VersionHistory(props) {
+// A view showing the past revisions of a project.
+function HistoryTab({ projectId, onVersionChange }) {
   const ohNo = ({ error }) => (
     <p className="mt-8 text-center text-sm font-medium">Something went wrong: {error.message}</p>
   )
-  return props.projectId == undefined ? null : (
-    <ErrorBoundary FallbackComponent={ohNo}>
-      <div className="mt-8 flow-root">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <HistoryTable projectId={props.projectId} onVersionChange={props.onVersionChange} />
-          </div>
+
+  return (
+    <>
+      <div className="sm:flex sm:items-center">
+        <div className="sm:flex-auto">
+          <h1 className="text-base font-semibold leading-6 text-gray-900">Revision history</h1>
+          <p className="mt-2 text-sm text-gray-700">
+            A history of all past revisions of this project:
+          </p>
         </div>
       </div>
-    </ErrorBoundary>
+      {projectId && (
+        <ErrorBoundary FallbackComponent={ohNo}>
+          <div className="mt-8 flow-root">
+            <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <HistoryTable projectId={projectId} onVersionChange={onVersionChange} />
+              </div>
+            </div>
+          </div>
+        </ErrorBoundary>
+      )}
+    </>
   )
 }
+
+export default HistoryTab

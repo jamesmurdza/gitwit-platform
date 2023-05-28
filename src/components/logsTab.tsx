@@ -1,9 +1,12 @@
 import { ErrorBoundary } from "@blitzjs/next"
 import { useQuery } from "@blitzjs/rpc"
+
 import getBuildInfo from "src/projects/queries/getBuildInfo"
+
 import { Disclosure } from "@headlessui/react"
 import { ChevronUpIcon } from "@heroicons/react/20/solid"
 
+// Collapseable views for the build script and log
 function BuildLogTable(props) {
   const [build, isLoading] = useQuery(getBuildInfo, { id: props.buildId })
 
@@ -47,20 +50,34 @@ function BuildLogTable(props) {
   )
 }
 
-// Catch errors and display a fallback UI
-export function BuildLogs(props) {
+// A view showing build script and logs.
+function LogsTab({ build }) {
   const ohNo = ({ error }) => (
     <p className="mt-8 text-center text-sm font-medium">Something went wrong: {error.message}</p>
   )
-  return props.buildId == undefined ? null : (
-    <ErrorBoundary FallbackComponent={ohNo}>
-      <div className="mt-8 flow-root">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <BuildLogTable buildId={props.buildId} />
-          </div>
+  return (
+    <>
+      <div className="sm:flex sm:items-center">
+        <div className="sm:flex-auto">
+          <h1 className="text-base font-semibold leading-6 text-gray-900">Build logs</h1>
+          <p className="mt-2 text-sm text-gray-700">
+            Logs from when this version of the project was generated:
+          </p>
         </div>
       </div>
-    </ErrorBoundary>
+      ( props.build.id && (
+      <ErrorBoundary FallbackComponent={ohNo}>
+        <div className="mt-8 flow-root">
+          <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+              <BuildLogTable buildId={build.id} />
+            </div>
+          </div>
+        </div>
+      </ErrorBoundary>
+      ) )
+    </>
   )
 }
+
+export default LogsTab

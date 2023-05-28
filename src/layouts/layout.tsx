@@ -9,6 +9,7 @@ import Image from "next/image"
 import Head from "next/head"
 import { BlitzLayout } from "@blitzjs/next"
 import router from "next/router"
+import { Suspense } from "react"
 
 const isDemo: boolean = !!process.env.NEXT_PUBLIC_DEMO
 
@@ -267,7 +268,9 @@ const PageLayout: BlitzLayout<{ title?: string; children?: React.ReactNode }> = 
 
       <main>
         <ErrorBoundary FallbackComponent={ErrorFallback} onError={handleError}>
-          {children}
+          <Suspense fallback={<div className="text-center mt-8">Loading...</div>}>
+            {children}
+          </Suspense>
         </ErrorBoundary>
       </main>
     </>
