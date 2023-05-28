@@ -64,7 +64,7 @@ function HistoryTable(props) {
         {versions.map((version) => (
           <tr key={version.name}>
             <td className="whitespace-normal py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
-              {version.name}
+              <a href={`/project/${props.projectId}/revision/${version.id}`}>{version.name}</a>{" "}
             </td>
             <td className="whitespace-normal py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
               {trimString(version.userInput, 35)}

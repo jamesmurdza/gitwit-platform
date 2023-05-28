@@ -47,6 +47,7 @@
     "postcss": "8.x",
     "quirrel": "1.x",
     "react": "18.2.0",
+    "react-diff-view": "3.0.3",
     "react-dom": "18.2.0",
     "react-hook-form": "7.43.9",
     "react-spinners": "0.13.8",
