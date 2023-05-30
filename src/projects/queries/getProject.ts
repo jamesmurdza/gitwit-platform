@@ -37,7 +37,10 @@ export default resolver.pipe(
         outputHTMLURL: true,
         status: true,
         buildError: true,
-        projectId: true
+        projectId: true,
+        parentVersionId: true,
+        isCurrentVersion: true,
+        merged: true
       }
     })
 

@@ -19,7 +19,9 @@ function ProjectHeader({ project }) {
   const regex = /\/\/github\.com\/([\w-]+)\/([\w-]+)(\/tree\/([\w-]+))?/
   const [, repositoryUsername, repositoryName, , branchNameComponent] =
     htmlRepositoryURL?.match(regex) ?? []
-  const branchName = branchNameComponent ?? "main"
+
+  // If the current build has been merged, display the main branch. Otherwise use the current build branch.
+  const branchName = project.build?.merged ? "main" : branchNameComponent ?? "main"
 
   return (
     <header className="relative isolate">
@@ -30,10 +32,12 @@ function ProjectHeader({ project }) {
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-x-8 lg:mx-0 lg:max-w-none">
           <div className="flex flex-wrap items-center gap-x-6">
             <h1>
-              <div className="leading-6 text-gray-900 text-2xl">
-                <FolderIcon className="inline-block align-text-bottom h-5 mb-0.5 mr-2" />
-                {project.repositoryName}
-              </div>
+              <a href={`/project/${project.id}`}>
+                <div className="leading-6 text-gray-900 text-2xl">
+                  <FolderIcon className="inline-block align-text-bottom h-5 mb-0.5 mr-2" />
+                  {project.repositoryName}
+                </div>
+              </a>
             </h1>
             {htmlRepositoryURL && (
               <div className="text-sm leading-6 text-gray-500 mt-1">
@@ -56,7 +60,7 @@ function ProjectHeader({ project }) {
             <a
               href={`https://github.com/codespaces/new?repo=${repositoryUsername}/${repositoryName}&ref=${branchName}`}
               target="_blank"
-              className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
               rel="noreferrer"
             >
               Deploy

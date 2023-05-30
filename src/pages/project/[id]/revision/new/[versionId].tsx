@@ -24,7 +24,7 @@ export default function ReviseProjectPage() {
               name,
               parentVersionId,
             })
-            await router.push(`/project/${result.id}`)
+            await router.push(`/project/${result.projectId}/revision/${result.id}`)
           }}
           title="New revision"
           instructions="Modify project code to add features, fix bugs, or make other improvements."

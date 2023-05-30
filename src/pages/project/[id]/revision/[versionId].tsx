@@ -1,13 +1,19 @@
-import { Suspense } from "react"
 import { useParam } from "@blitzjs/next"
 import { ProjectView } from "src/components/projectView"
-import { useQuery } from "@blitzjs/rpc"
+import { useQuery, useMutation } from "@blitzjs/rpc"
+import router from "next/router"
 
 import getProject from "src/projects/queries/getProject"
+import applyChanges from "src/projects/mutations/applyChanges"
+import setCurrentVersion from "src/projects/mutations/setCurrentVersion"
 
 import Layout from "src/layouts/layout"
-import { DiffView } from "src/components/diffView"
+import { BuildLoadingView, BuildFailedView } from "src/components/buildView"
+
 import { ErrorBoundary } from "@blitzjs/next"
+import { DiffView } from "src/components/diffView"
+
+import { CheckCircleIcon } from "@heroicons/react/20/solid"
 
 import "react-diff-view/style/index.css"
 
@@ -28,16 +34,73 @@ function VersionView() {
   const versionId = typeof versionParam == "string" ? Number.parseInt(versionParam) : undefined
 
   const [project, { refetch }] = useQuery(getProject, { id, versionId })
+  const [applyChangesMutation] = useMutation(applyChanges)
+  const [revertToVersionMutation] = useMutation(setCurrentVersion)
 
   const ohNo = ({ error }) => (
     <p className="mt-8 text-center text-sm font-medium">Something went wrong: {error.message}</p>
   )
 
+  const build = project.build
+
   return (
     <ProjectView project={project}>
       <ErrorBoundary FallbackComponent={ohNo}>
-        <div className="w-full">
-          <DiffView buildId={versionId!} />
+        <div className="w-full mt-4">
+          {
+            // Panel showing the status of the current build.
+            BuildLoadingView(build) || BuildFailedView(build)
+          }
+          {
+            // Review changes view when the build succeeded.
+            build?.outputHTMLURL && (
+              <>
+                <div className="bg-gray-50 sm:rounded-lg mb-8 border-solid">
+                  <div></div>
+                  <div className="px-4 py-5 sm:p-6">
+                    <div className="mt-1 sm:flex sm:items-start sm:justify-between">
+                      <div className="max-w-xl text-sm text-gray-500">
+                        <p>
+                          Review the changes below and decide whether or not to apply them to the
+                          project. This revision is saved in your project history for later access.
+                        </p>
+                      </div>
+                      <div className="mt-5 sm:ml-6 sm:mt-0 sm:flex sm:flex-shrink-0 sm:items-center">
+                        {build.parentVersionId && (
+                          <button
+                            type="button"
+                            className="ml-2 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            onClick={async () => {
+                              // If the current build is rejected, revert to the last current build.
+                              if (build.isCurrentVersion) {
+                                await revertToVersionMutation({ buildId: build.parentVersionId! })
+                              }
+                              await router.push(`/project/${id}`)
+                            }}
+                          >
+                            Do not apply
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="ml-2 inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                          onClick={async () => {
+                            // Accept and apply the changes from this build.
+                            const result = await applyChangesMutation({ buildId: versionId! })
+                            await router.push(`/project/${id}`)
+                          }}
+                        >
+                          Apply changes
+                          <CheckCircleIcon className="-mr-0.5 h-5 w-5" aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <DiffView buildId={versionId!} />
+              </>
+            )
+          }
         </div>
       </ErrorBoundary>
     </ProjectView>

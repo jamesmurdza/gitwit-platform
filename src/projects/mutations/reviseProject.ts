@@ -65,6 +65,6 @@ export default resolver.pipe(
     });
     await runBuildQueue.enqueue(build.id)
 
-    return project;
+    return build;
   }
 );
