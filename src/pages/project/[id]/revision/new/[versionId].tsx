@@ -7,8 +7,8 @@ import router from "next/router"
 
 export default function ReviseProjectPage() {
   const [reviseProjectMutation, { isLoading, error }] = useMutation(reviseProject)
-  const idParam = useParam("id", "string")
-  const parentVersionId = Number.parseInt(idParam!)
+  const versionIdParam = useParam("versionId", "string")
+  const parentVersionId = Number.parseInt(versionIdParam!)
 
   return (
     <>
