@@ -47,10 +47,8 @@ function VersionView() {
     <ProjectView project={project}>
       <ErrorBoundary FallbackComponent={ohNo}>
         <div className="w-full mt-4">
-          {
-            // Panel showing the status of the current build.
-            BuildLoadingView(build) || BuildFailedView(build)
-          }
+          <BuildLoadingView build={build} />
+          <BuildFailedView build={build} />
           {
             // Review changes view when the build succeeded.
             build?.outputHTMLURL && (

@@ -6,7 +6,7 @@ import router from "next/router"
 import { BarLoader } from "react-spinners"
 
 // Loading panel when the build is in progress.
-export function BuildLoadingView(build) {
+export function BuildLoadingView({ build }) {
   return build && (build.status === "PENDING" || build.status === "RUNNING") ? (
     <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
       <div className="px-4 py-5 sm:p-6">
@@ -21,12 +21,14 @@ export function BuildLoadingView(build) {
         </div>
       </div>
     </div>
-  ) : undefined
+  ) : (
+    <></>
+  )
 }
 
 // Try again panel when the build failed.
-export function BuildFailedView(build) {
-  const [restartBuildMutation, { isLoading, error }] = useMutation(restartBuild)
+export function BuildFailedView({ build }) {
+  const [restartBuildMutation] = useMutation(restartBuild)
 
   return build && build.status == "FAILURE" ? (
     <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
@@ -49,11 +51,13 @@ export function BuildFailedView(build) {
         </div>
       </div>
     </div>
-  ) : undefined
+  ) : (
+    <></>
+  )
 }
 
 // New revision panel when the build succeeded.
-export function NewRevisionView(build) {
+export function NewRevisionView({ build }) {
   return build && build.status == "SUCCESS" ? (
     <div className="bg-gray-50 sm:rounded-lg mb-12 border-solid">
       <div></div>
@@ -78,5 +82,18 @@ export function NewRevisionView(build) {
         </div>
       </div>
     </div>
-  ) : undefined
+  ) : (
+    <></>
+  )
+}
+
+// Panel showing the status of the current build.
+export function BuildStatusView({ build }) {
+  return (
+    <>
+      <BuildLoadingView build={build} />
+      <BuildFailedView build={build} />
+      <NewRevisionView build={build} />
+    </>
+  )
 }

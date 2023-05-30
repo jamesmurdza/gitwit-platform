@@ -3,7 +3,7 @@ import { useQuery } from "@blitzjs/rpc"
 
 import getProjectFiles from "src/projects/queries/getProjectFiles"
 
-import { BuildLoadingView, BuildFailedView, NewRevisionView } from "src/components/buildView"
+import { BuildStatusView } from "src/components/buildView"
 
 const isDemo: boolean = !!process.env.NEXT_PUBLIC_DEMO
 
@@ -59,10 +59,7 @@ function CodeTab({ build }) {
   )
   return (
     <>
-      {
-        // Panel showing the status of the current build:
-        BuildLoadingView(build) || BuildFailedView(build) || NewRevisionView(build)
-      }
+      <BuildStatusView build={build} />
       {
         // File preview when the build succeeded.
         build?.outputHTMLURL && (
