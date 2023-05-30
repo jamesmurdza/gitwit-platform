@@ -46,33 +46,36 @@ export default Queue("api/runBuild", async (buildId: number) => {
   console.log(input)
   try {
 
+    const onFinished = async ({ outputGitURL, outputHTMLURL, buildScript, buildLog, completionId, gptModel, gitwitVersion }) => {
+      // PostgreSQL doesn't support storing NULL (\0x00) characters in text fields.
+      // https://stackoverflow.com/questions/1347646/
+      const cleanString = (str: string) => str.replace(/\0/g, '');
+
+      await db.build.update({
+        where: { id: build.id },
+        data: {
+          status: "SUCCESS",
+          buildScript: buildScript ? cleanString(buildScript) : undefined,
+          buildLog: buildLog ? cleanString(buildLog) : undefined,
+          gptModel,
+          gitwitVersion,
+          completionId,
+          outputGitURL,
+          outputHTMLURL
+        }
+      })
+
+      await db.project.update({
+        where: { id: project.id },
+        data: {
+          repositoryURL: outputHTMLURL,
+        }
+      })
+    }
+
     let gitwitProject = new Build(input)
-    let { outputGitURL, outputHTMLURL, buildScript, buildLog, completionId, gptModel, gitwitVersion } = await gitwitProject.buildAndPush()
+    await gitwitProject.buildAndPush({ onFinished })
 
-    // PostgreSQL doesn't support storing NULL (\0x00) characters in text fields.
-    // https://stackoverflow.com/questions/1347646/
-    const cleanString = (str: string) => str.replace(/\0/g, '');
-
-    await db.build.update({
-      where: { id: build.id },
-      data: {
-        status: "SUCCESS",
-        buildScript: buildScript ? cleanString(buildScript) : undefined,
-        buildLog: buildLog ? cleanString(buildLog) : undefined,
-        gptModel,
-        gitwitVersion,
-        completionId,
-        outputGitURL,
-        outputHTMLURL
-      }
-    })
-
-    await db.project.update({
-      where: { id: project.id },
-      data: {
-        repositoryURL: outputHTMLURL,
-      }
-    })
   } catch (error) {
     await db.build.update({
       where: { id: build.id },
