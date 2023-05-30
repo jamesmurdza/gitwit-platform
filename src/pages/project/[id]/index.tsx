@@ -1,17 +1,15 @@
-import { Suspense } from "react"
 import { ProjectView } from "src/components/projectView"
 import { useParam } from "@blitzjs/next"
 
 import router from "next/router"
 import { useState, useEffect } from "react"
-import { useQuery, useMutation } from "@blitzjs/rpc"
+import { useQuery } from "@blitzjs/rpc"
 
 import HistoryTab from "src/components/historyTab"
 import CodeTab from "src/components/codeTab"
 import LogsTab from "src/components/logsTab"
 
 import getProject from "src/projects/queries/getProject"
-import restartBuild from "src/projects/mutations/restartBuild"
 
 import Layout from "src/layouts/layout"
 
@@ -36,7 +34,7 @@ function MainProjectView() {
   const idParam = useParam("id")
   const id = typeof idParam == "string" ? Number.parseInt(idParam) : undefined
 
-  const [project, { refetch }] = useQuery(getProject, { id }, { refetchInterval: 5000 })
+  const [project] = useQuery(getProject, { id }, { refetchInterval: 5000 })
 
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ")
@@ -66,12 +64,6 @@ function MainProjectView() {
     window?.addEventListener("hashchange", handleHashChange)
     return () => window?.removeEventListener("hashchange", handleHashChange)
   }, [])
-
-  const [restartBuildMutation, { isLoading, error }] = useMutation(restartBuild)
-  const tryAgain = async () => {
-    const result = await restartBuildMutation({ id: project.build!.id })
-    await refetch()
-  }
 
   return (
     <ProjectView project={project}>
@@ -110,7 +102,6 @@ function MainProjectView() {
           <HistoryTab
             projectId={id}
             onVersionChange={async () => {
-              await refetch()
               await router.push("#preview")
               setHash("#preview")
             }}
@@ -118,7 +109,7 @@ function MainProjectView() {
         ) : hash === "#logs" ? (
           <LogsTab build={project.build} />
         ) : (
-          <CodeTab build={project.build} tryAgain={tryAgain} />
+          <CodeTab build={project.build} />
         )}
       </main>
     </ProjectView>
