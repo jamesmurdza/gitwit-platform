@@ -65,7 +65,6 @@ function LogsTab({ build }) {
           </p>
         </div>
       </div>
-      ( props.build.id && (
       <ErrorBoundary FallbackComponent={ohNo}>
         <div className="mt-8 flow-root">
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -75,7 +74,6 @@ function LogsTab({ build }) {
           </div>
         </div>
       </ErrorBoundary>
-      ) )
     </>
   )
 }
