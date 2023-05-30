@@ -12,8 +12,8 @@ export default function UnifiedDecoration(props: any) {
   return (
     <tbody>
       <tr className="diff-line">
-        <td colSpan={2} />
-        <td className="diff-code">
+        <td colSpan={2} className="bg-blue-100" />
+        <td className="diff-code bg-blue-50 text-gray-500">
           <span>{props.children}</span>
         </td>
       </tr>
@@ -65,8 +65,20 @@ export function FileDiffView({ file, comparison }) {
             </Disclosure.Button>
             <Disclosure.Panel className="px-0 pb-0 text-sm text-gray-500">
               <div className="text-sm text-black">
-                <Diff viewType="unified" key={file.sha} hunks={fileDiff.hunks} diffType="modify">
-                  {(hunks) => hunks.reduce(renderHunk, [])}
+                <Diff viewType="unified" key={file.sha} hunks={fileDiff?.hunks} diffType="modify">
+                  {(hunks) =>
+                    hunks?.reduce(renderHunk, []) || (
+                      <>
+                        <td
+                          colSpan={3}
+                          className="font-normal text-sm leading-6 px-9 text-gray-500"
+                          height={35}
+                        >
+                          The contents of this file cannot be shown.
+                        </td>
+                      </>
+                    )
+                  }
                 </Diff>
               </div>
             </Disclosure.Panel>
