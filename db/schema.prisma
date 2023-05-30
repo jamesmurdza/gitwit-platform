@@ -130,4 +130,5 @@ model Build {
   isInitialVersion Boolean     @default(false)
   isCurrentVersion Boolean     @default(false)
   templateGitURL   String?
+  merged           Boolean     @default(false)
 }
