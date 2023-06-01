@@ -49,7 +49,7 @@ function VersionView() {
           <BuildFailedView build={build} />
           {
             // Review changes view when the build succeeded.
-            build?.outputHTMLURL && (
+            build?.outputHTMLURL && !build.merged && (
               <>
                 <div className="bg-gray-50 sm:rounded-lg mb-8 border-solid">
                   <div></div>
