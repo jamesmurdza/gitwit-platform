@@ -44,14 +44,6 @@ export default resolver.pipe(
       throw new Error("Failed to find build.")
     }
 
-    // Only one build can be marked as current.
-    await db.build.updateMany({
-      where: { projectId: failedBuild.Project.id, Project: { ownerId: user.id } },
-      data: {
-        isCurrentVersion: false,
-      }
-    })
-
     // Start a build for the new project.
     const build = await db.build.create({
       data: {
@@ -62,7 +54,6 @@ export default resolver.pipe(
         parentVersionId: failedBuild.parentVersionId,
         isInitialVersion: failedBuild.isInitialVersion,
         templateGitURL: failedBuild.templateGitURL,
-        isCurrentVersion: true
         status: BuildStatus.RUNNING,
       }
     });

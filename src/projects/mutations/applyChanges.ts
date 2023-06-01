@@ -47,7 +47,6 @@ export default resolver.pipe(
       where: {
         id: buildId,
         Project: { ownerId: user.id },
-        isCurrentVersion: true
       }
     });
 
@@ -67,6 +66,15 @@ export default resolver.pipe(
     } catch (error) {
       throw Error(`Error occurred while merging branch: ${error.message}`)
     }
+
+    // Since it is merged, we don't need to use this version as the default branch.
+    // The isCurrentVersion field was used before there was the ability to merge branches.
+    await db.build.updateMany({
+      where: { projectId: build.projectId, Project: { ownerId: user.id } },
+      data: {
+        isCurrentVersion: false,
+      }
+    })
 
     // Indicate that the main branch is up-to-date.
     await db.build.update({

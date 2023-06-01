@@ -5,7 +5,6 @@ import router from "next/router"
 
 import getProject from "src/projects/queries/getProject"
 import applyChanges from "src/projects/mutations/applyChanges"
-import setCurrentVersion from "src/projects/mutations/setCurrentVersion"
 
 import Layout from "src/layouts/layout"
 import { BuildLoadingView, BuildFailedView } from "src/components/buildView"
@@ -35,7 +34,6 @@ function VersionView() {
 
   const [project, { refetch }] = useQuery(getProject, { id, versionId })
   const [applyChangesMutation] = useMutation(applyChanges)
-  const [revertToVersionMutation] = useMutation(setCurrentVersion)
 
   const ohNo = ({ error }) => (
     <p className="mt-8 text-center text-sm font-medium">Something went wrong: {error.message}</p>
@@ -69,10 +67,7 @@ function VersionView() {
                             type="button"
                             className="ml-2 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                             onClick={async () => {
-                              // If the current build is rejected, revert to the last current build.
-                              if (build.isCurrentVersion) {
-                                await revertToVersionMutation({ buildId: build.parentVersionId! })
-                              }
+                              // If the changes are rejected, do nothing and go back to the project details page.
                               await router.push(`/project/${id}`)
                             }}
                           >

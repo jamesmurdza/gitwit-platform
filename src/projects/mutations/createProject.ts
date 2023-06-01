@@ -40,14 +40,6 @@ export default resolver.pipe(
       throw new Error("Failed to create project.")
     }
 
-    // Only one build can be marked as current.
-    await db.build.updateMany({
-      where: { projectId: project.id, Project: { ownerId: user.id } },
-      data: {
-        isCurrentVersion: false,
-      }
-    })
-
     // Start a build for the new project.
     const build = await db.build.create({
       data: {

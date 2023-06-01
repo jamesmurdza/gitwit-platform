@@ -3,6 +3,7 @@ import { resolver } from "@blitzjs/rpc";
 import db from "db";
 import { z } from "zod";
 import { getUser, verifyUser } from "src/utils/user";
+import { BuildType } from "@prisma/client";
 
 const GetProject = z.object({
   // This accepts type of undefined, but is required at runtime
@@ -27,11 +28,26 @@ export default resolver.pipe(
     });
     if (!project) throw new NotFoundError();
 
-    // Get the build for the specified version of the project, or the current if unspecified.
+    // The current version is the latest version that has been merged, or the initial version.
+    // Previously this was indicated by the isCurrentVersion field, when merging was not a feature.
+    const currentVersion = {
+      OR: [
+        { merged: true },
+        { isCurrentVersion: true },
+        { buildType: BuildType.TEMPLATE },
+        { buildType: BuildType.REPOSITORY },
+      ]
+    }
+    // Select the specified version, or the current version if none is specified.
+    const selectedVersion = versionId ? { id: versionId } : currentVersion;
     const build = await db.build.findFirst({
-      where: versionId
-        ? { projectId: id, id: versionId }
-        : { projectId: id, isCurrentVersion: true },
+      where: {
+        projectId: id,
+        ...selectedVersion
+      },
+      orderBy: {
+        createdAt: "desc"
+      },
       select: {
         id: true,
         outputHTMLURL: true,
@@ -39,7 +55,6 @@ export default resolver.pipe(
         buildError: true,
         projectId: true,
         parentVersionId: true,
-        isCurrentVersion: true,
         merged: true
       }
     })

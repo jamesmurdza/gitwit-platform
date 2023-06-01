@@ -37,10 +37,10 @@ export default resolver.pipe(
           where: whereUser,
           include: {
             Build: {
-              where: {
-                isCurrentVersion: true
-              },
               take: 1,
+              orderBy: {
+                createdAt: "desc"
+              }
             },
           },
           orderBy
