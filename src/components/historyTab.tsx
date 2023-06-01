@@ -1,13 +1,21 @@
 import { ErrorBoundary } from "@blitzjs/next"
-import { useQuery, useMutation } from "@blitzjs/rpc"
+import { useQuery } from "@blitzjs/rpc"
 
 import getProjectVersions from "src/projects/queries/getProjectVersions"
-import setCurrentVersion from "src/projects/mutations/setCurrentVersion"
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import {
+  faCheckCircle,
+  faCircleExclamation,
+  faRotate,
+  faCodeBranch,
+} from "@fortawesome/free-solid-svg-icons"
+
+import { BuildType, BuildStatus } from "@prisma/client"
 
 // This is the table that shows past revisions of a project.
-function HistoryTable(props) {
-  const [versions, isLoading] = useQuery(getProjectVersions, { id: props.projectId })
-  const [setCurrentVersionMutation] = useMutation(setCurrentVersion)
+function HistoryTable({ projectId }) {
+  const [versions, { refetch }] = useQuery(getProjectVersions, { id: projectId })
 
   // Date format: April 28 at 10:12 AM
   const formatDate = (date) => {
@@ -20,15 +28,87 @@ function HistoryTable(props) {
     return formattedDate
   }
 
-  // Convert string from STATUS to Status
-  const formatStatus = (status) => {
-    return status.toLowerCase().replace(/^\w/, (c) => c.toUpperCase())
-  }
-
   // Truncate string to length and add ellipsis
   const trimString = (str, length) => {
     return str.length > length ? str.substring(0, length - 3) + "..." : str
   }
+
+  // Icon showing version status
+  const VersionStatusIcon = ({ version }) => {
+    if (version.status == BuildStatus.SUCCESS && version.changesApplied)
+      return (
+        <FontAwesomeIcon
+          title="Changes applied"
+          icon={faCheckCircle}
+          className="text-[16px] text-[#1d7723] mr-1"
+        />
+      )
+    if (version.status == BuildStatus.SUCCESS)
+      return (
+        <FontAwesomeIcon
+          title="Changes ready"
+          icon={faCheckCircle}
+          className="text-[16px] text-[#777777] mr-1"
+        />
+      )
+    if (version.status == BuildStatus.FAILURE)
+      return (
+        <FontAwesomeIcon
+          title="Build failed"
+          icon={faCircleExclamation}
+          className="text-[16px] text-[#bb0000] mr-1"
+        />
+      )
+    return (
+      <FontAwesomeIcon
+        title="Build in progress"
+        icon={faRotate}
+        spin
+        className="text-[16px] text-[#555555] mr-1"
+      />
+    )
+  }
+
+  // Generate the icon showing version status
+  const VersionRow = ({ version }) => {
+    // Check the version has been applied to main.
+    const changesApplied =
+      version.merged ||
+      version.buildType == BuildType.TEMPLATE ||
+      version.buildType == BuildType.REPOSITORY
+    const versionInfo = { ...version, changesApplied }
+    return (
+      <tr>
+        <td className="whitespace-normal py-5 pl-4 pr-3 text-sm text-gray-700 sm:pl-0">
+          <VersionStatusIcon version={versionInfo} />
+          <VersionRef version={versionInfo}>{trimString(version.userInput, 50)}</VersionRef>
+        </td>
+        <td className="whitespace-normal py-5 pl-4 pr-3 text-sm text-gray-600 sm:pl-0">
+          <BranchRef version={versionInfo}>{trimString(version.name, 35)}</BranchRef>
+        </td>
+        <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm text-gray-600 sm:pl-0">
+          <VersionRef version={versionInfo}>{formatDate(version.createdAt)}</VersionRef>
+        </td>
+      </tr>
+    )
+  }
+
+  // A link to the revision details page.
+  const VersionRef = ({ version, children }) => {
+    return version.changesApplied ? (
+      children
+    ) : (
+      <a href={`/project/${projectId}/revision/${version.id}`}>{children}</a>
+    )
+  }
+
+  // A link to the version's branch on GitHub.
+  const BranchRef = ({ version, children }) => (
+    <a href={version.outputHTMLURL} target="_blank" rel="noreferrer">
+      <FontAwesomeIcon icon={faCodeBranch} className="mr-1 ml-1" />
+      {children}
+    </a>
+  )
 
   return (
     <table className="min-w-full divide-y divide-gray-300">
@@ -38,58 +118,25 @@ function HistoryTable(props) {
             scope="col"
             className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
           >
-            Name
-          </th>
-          <th
-            scope="col"
-            className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-          >
-            Input
+            Changes
           </th>
           <th
             scope="col"
             className="py-3.5 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-0"
           >
-            Date
+            Branch
           </th>
           <th
             scope="col"
-            className="py-3.5 pl-4 text-right text-sm font-semibold text-gray-900 sm:pl-0"
+            className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
           >
-            Status
+            Date
           </th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-200">
         {versions.map((version) => (
-          <tr key={version.name}>
-            <td className="whitespace-normal py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
-              <a href={`/project/${props.projectId}/revision/${version.id}`}>{version.name}</a>{" "}
-            </td>
-            <td className="whitespace-normal py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
-              {trimString(version.userInput, 35)}
-            </td>
-            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
-              {formatDate(version.createdAt)}
-            </td>
-            <td className="relative whitespace-nowrap py-4 pl-3 text-right text-sm">
-              {version.isCurrentVersion ? (
-                <span>Current</span>
-              ) : version.outputHTMLURL ? (
-                <button
-                  className="text-indigo-600 hover:text-indigo-900"
-                  onClick={async () => {
-                    await setCurrentVersionMutation({ buildId: version.id })
-                    props.onVersionChange()
-                  }}
-                >
-                  Use version<span className="sr-only">, {version.name}</span>
-                </button>
-              ) : (
-                <span>{formatStatus(version.status)}</span>
-              )}
-            </td>
-          </tr>
+          <VersionRow version={version} key={version.id} />
         ))}
       </tbody>
     </table>
@@ -117,7 +164,7 @@ function HistoryTab({ projectId, onVersionChange }) {
           <div className="mt-8 flow-root">
             <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                <HistoryTable projectId={projectId} onVersionChange={onVersionChange} />
+                <HistoryTable projectId={projectId} />
               </div>
             </div>
           </div>

@@ -34,7 +34,8 @@ export default resolver.pipe(
         createdAt: true,
         outputHTMLURL: true,
         status: true,
-        isCurrentVersion: true,
+        merged: true,
+        buildType: true,
         userInput: true,
       }, orderBy: { createdAt: "desc" }
     })
