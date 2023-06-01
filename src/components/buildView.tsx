@@ -5,13 +5,15 @@ import router from "next/router"
 
 import { BarLoader } from "react-spinners"
 
+import { BuildStatus } from "@prisma/client"
+
 // Loading panel when the build is in progress.
 export function BuildLoadingView({ build }) {
-  return build && (build.status === "PENDING" || build.status === "RUNNING") ? (
+  return build && (build.status === BuildStatus.PENDING || build.status === BuildStatus.RUNNING) ? (
     <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
       <div className="px-4 py-5 sm:p-6">
         <h3 className="text-base font-semibold leading-6 text-gray-900">
-          {build.status === "RUNNING" ? "Build in progress" : "Build in queue"}
+          {build.status === BuildStatus.RUNNING ? "Build in progress" : "Build in queue"}
         </h3>
         <div className="mt-2 text-sm text-gray-500">
           <p>Your repository is being generated. This should take less than two minutes.</p>
@@ -30,7 +32,7 @@ export function BuildLoadingView({ build }) {
 export function BuildFailedView({ build }) {
   const [restartBuildMutation] = useMutation(restartBuild)
 
-  return build && build.status == "FAILURE" ? (
+  return build && build.status == BuildStatus.FAILURE ? (
     <div className="bg-gray-50 sm:rounded-lg mb-12 text-center">
       <div className="px-4 py-5 sm:p-6">
         <h3 className="text-base font-semibold leading-6 text-gray-900">Build failed</h3>
@@ -58,7 +60,7 @@ export function BuildFailedView({ build }) {
 
 // New revision panel when the build succeeded.
 export function NewRevisionView({ build }) {
-  return build && build.status == "SUCCESS" ? (
+  return build && build.status == BuildStatus.SUCCESS ? (
     <div className="bg-gray-50 sm:rounded-lg mb-12 border-solid">
       <div></div>
       <div className="px-4 py-5 sm:p-6">

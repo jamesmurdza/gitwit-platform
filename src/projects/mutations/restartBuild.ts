@@ -4,6 +4,8 @@ import { z } from "zod";
 import runBuildQueue from "src/pages/api/runBuild"
 import { getUser, verifyUser, rateLimitUser } from "src/utils/user";
 
+import { BuildStatus } from "@prisma/client";
+
 const RestartBuild = z.object({
   id: z.number(),
 });
@@ -60,8 +62,8 @@ export default resolver.pipe(
         parentVersionId: failedBuild.parentVersionId,
         isInitialVersion: failedBuild.isInitialVersion,
         templateGitURL: failedBuild.templateGitURL,
-        status: "RUNNING",
         isCurrentVersion: true
+        status: BuildStatus.RUNNING,
       }
     });
     await runBuildQueue.enqueue(build.id)

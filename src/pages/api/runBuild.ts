@@ -2,6 +2,8 @@ import { Queue } from "quirrel/blitz"
 import { Build } from "lib/gitwit"
 import db from "db"
 
+import { BuildType, BuildStatus } from "@prisma/client"
+
 export default Queue("api/runBuild", async (buildId: number) => {
 
   const build = await db.build.findFirst({
@@ -19,7 +21,7 @@ export default Queue("api/runBuild", async (buildId: number) => {
     throw new Error("Build not found")
   }
 
-  const isBranch = build.buildType === "BRANCH"
+  const isBranch = build.buildType === BuildType.BRANCH
 
   const project = build.Project;
   const defaultName = isBranch ? "new-feature" : "new-project"
@@ -54,7 +56,7 @@ export default Queue("api/runBuild", async (buildId: number) => {
       await db.build.update({
         where: { id: build.id },
         data: {
-          status: "SUCCESS",
+          status: BuildStatus.SUCCESS,
           buildScript: buildScript ? cleanString(buildScript) : undefined,
           buildLog: buildLog ? cleanString(buildLog) : undefined,
           gptModel,
@@ -80,7 +82,7 @@ export default Queue("api/runBuild", async (buildId: number) => {
     await db.build.update({
       where: { id: build.id },
       data: {
-        status: "FAILURE",
+        status: BuildStatus.FAILURE,
         buildError: error.message,
       }
     })

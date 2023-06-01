@@ -3,6 +3,7 @@ import db from "db";
 import { z } from "zod";
 import runBuildQueue from "src/pages/api/runBuild"
 import { getUser, verifyUser, rateLimitUser } from "src/utils/user";
+import { BuildType, BuildStatus } from "@prisma/client";
 
 const CreateProject = z.object({
   description: z.string(),
@@ -53,9 +54,8 @@ export default resolver.pipe(
         projectId: project.id,
         name: input.name,
         userInput: input.description,
-        buildType: input.template ? "TEMPLATE" : "REPOSITORY",
-        status: "RUNNING",
-        isCurrentVersion: true,
+        buildType: input.template ? BuildType.TEMPLATE : BuildType.REPOSITORY,
+        status: BuildStatus.RUNNING,
         ...(input.template && { templateGitURL: templates[input.template] }),
       }
     });
