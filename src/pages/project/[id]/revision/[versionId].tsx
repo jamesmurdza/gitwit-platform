@@ -32,7 +32,7 @@ function VersionView() {
   const versionParam = useParam("versionId")
   const versionId = typeof versionParam == "string" ? Number.parseInt(versionParam) : undefined
 
-  const [project, { refetch }] = useQuery(getProject, { id, versionId })
+  const [project, { loading }] = useQuery(getProject, { id, versionId }, { refetchInterval: 5000 })
   const [applyChangesMutation] = useMutation(applyChanges)
 
   const ohNo = ({ error }) => (
