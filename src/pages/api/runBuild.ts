@@ -31,7 +31,7 @@ export default Queue("api/runBuild", async (buildId: number) => {
     // Extract the branch name from the GitHub URL.
     const regex = /\/\/github\.com\/([\w-]+)\/([\w-]+)(\/tree\/([\w-]+))?/
     const [, repositoryUsername, repositoryName, , branchName] = build.parentVersion?.outputHTMLURL?.match(regex) ?? []
-    sourceBranch = branchName
+    sourceBranch = build.parentVersion?.merged ? "main" : branchName
   }
 
   const input = {
