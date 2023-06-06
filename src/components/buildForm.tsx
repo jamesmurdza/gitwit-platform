@@ -28,6 +28,11 @@ const templates = [
     description: "A Chrome extension written in JavaScript.",
   },
   {
+    id: "angularjs",
+    title: "AngularJS",
+    description: "An Angular using npm.",
+  },
+  {
     id: "custom",
     title: "Custom",
     description: "Your custom stack.",
