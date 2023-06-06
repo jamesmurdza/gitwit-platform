@@ -14,6 +14,7 @@ const CreateProject = z.object({
 const templates = {
   "react-nextjs": "https://github.com/gitwitdev/react-nextjs-base.git",
   "python": "https://github.com/gitwitdev/python-base.git",
+  "chrome-extension": "https://github.com/gitwitdev/chrome-extension-base.git",
 }
 
 export default resolver.pipe(

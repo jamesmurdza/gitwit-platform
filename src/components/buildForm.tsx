@@ -23,6 +23,11 @@ const templates = [
     description: "A Python app using pip.",
   },
   {
+    id: "chrome-extension",
+    title: "Chrome Extension",
+    description: "A Chrome extension written in JavaScript.",
+  },
+  {
     id: "custom",
     title: "Custom",
     description: "Your custom stack.",
