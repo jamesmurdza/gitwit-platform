@@ -11,12 +11,6 @@ const CreateProject = z.object({
   template: z.string().optional(),
 });
 
-const templates = {
-  "react-nextjs": "https://github.com/gitwitdev/react-nextjs-base.git",
-  "python": "https://github.com/gitwitdev/python-base.git",
-  "chrome-extension": "https://github.com/gitwitdev/chrome-extension-base.git",
-}
-
 export default resolver.pipe(
   resolver.zod(CreateProject),
   async (input, ctx) => {
@@ -41,6 +35,10 @@ export default resolver.pipe(
       throw new Error("Failed to create project.")
     }
 
+    const templateGitURL = input.template
+      ? `https://github.com/gitwitdev/${input.template}.git`
+      : null
+
     // Start a build for the new project.
     const build = await db.build.create({
       data: {
@@ -49,7 +47,7 @@ export default resolver.pipe(
         userInput: input.description,
         buildType: input.template ? BuildType.TEMPLATE : BuildType.REPOSITORY,
         status: BuildStatus.RUNNING,
-        ...(input.template && { templateGitURL: templates[input.template] }),
+        ...(templateGitURL && { templateGitURL }),
       }
     });
     await runBuildQueue.enqueue(build.id)
