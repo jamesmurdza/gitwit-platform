@@ -21,6 +21,9 @@ function ProjectHeader({ project }) {
     htmlRepositoryURL?.match(regex) ?? []
 
   // If the current build has been merged, display the main branch. Otherwise use the current build branch.
+  const updatedRepositoryURL = project.build?.merged
+    ? `https://github.com/${repositoryUsername}/${repositoryName}`
+    : htmlRepositoryURL
   const branchName = project.build?.merged ? "main" : branchNameComponent ?? "main"
 
   return (
@@ -41,7 +44,7 @@ function ProjectHeader({ project }) {
             </h1>
             {htmlRepositoryURL && (
               <div className="text-sm leading-6 text-gray-500 mt-1">
-                <a href={htmlRepositoryURL} target="_blank" rel="noreferrer">
+                <a href={updatedRepositoryURL} target="_blank" rel="noreferrer">
                   <FontAwesomeIcon icon={faGithub} /> {repositoryUsername}/{repositoryName}
                   <FontAwesomeIcon icon={faCodeBranch} className="ml-4" /> {branchName}
                 </a>
@@ -50,7 +53,7 @@ function ProjectHeader({ project }) {
           </div>
           <div className="flex items-center gap-x-4 sm:gap-x-6">
             <a
-              href={htmlRepositoryURL!}
+              href={updatedRepositoryURL!}
               className="hidden text-sm font-semibold leading-6 text-gray-900 sm:block"
               target="_blank"
               rel="noreferrer"
