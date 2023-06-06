@@ -5,6 +5,7 @@ import router from "next/router"
 
 import getProject from "src/projects/queries/getProject"
 import applyChanges from "src/projects/mutations/applyChanges"
+import restartBuild from "src/projects/mutations/restartBuild"
 
 import Layout from "src/layouts/layout"
 import { BuildLoadingView, BuildFailedView } from "src/components/buildView"
@@ -13,6 +14,8 @@ import { ErrorBoundary } from "@blitzjs/next"
 import { DiffView } from "src/components/diffView"
 
 import { CheckCircleIcon } from "@heroicons/react/20/solid"
+
+import { BuildType } from "@prisma/client"
 
 import "react-diff-view/style/index.css"
 
@@ -34,6 +37,7 @@ function VersionView() {
 
   const [project, { refetch }] = useQuery(getProject, { id, versionId }, { refetchInterval: 5000 })
   const [applyChangesMutation] = useMutation(applyChanges)
+  const [restartBuildMutation] = useMutation(restartBuild)
 
   const ohNo = ({ error }) => (
     <p className="mt-8 text-center text-sm font-medium">Something went wrong: {error.message}</p>
@@ -62,6 +66,20 @@ function VersionView() {
                         </p>
                       </div>
                       <div className="mt-5 sm:ml-6 sm:mt-0 sm:flex sm:flex-shrink-0 sm:items-center">
+                        {build.buildType === BuildType.BRANCH && (
+                          <button
+                            type="button"
+                            className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            onClick={async () => {
+                              const result = await restartBuildMutation({ id: build!.id })
+                              await router.push(
+                                `/project/${result.projectId}/revision/${result.id}`
+                              )
+                            }}
+                          >
+                            Try again
+                          </button>
+                        )}
                         {build.parentVersionId && (
                           <button
                             type="button"
@@ -71,7 +89,7 @@ function VersionView() {
                               await router.push(`/project/${id}`)
                             }}
                           >
-                            Do not apply
+                            Skip changes
                           </button>
                         )}
                         <button
