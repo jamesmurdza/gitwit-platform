@@ -71,9 +71,9 @@ export const verifyUser = async (user: GitHubUser) => {
 
 export const rateLimitUser = async (user: GitHubUser) => {
 
-  // Limit users to 15 builds in 30 minutes.
-  const rateLimit = 15;
-  const rateLimitPeriod = 30;
+  // Limit users to 20 builds in 10 minutes.
+  const rateLimit = 20;
+  const rateLimitPeriod = 10;
 
   const rateLimitPeriodStart = new Date(Date.now() - rateLimitPeriod * 60 * 1000);
   const recentBuilds = await db.build.findMany({
