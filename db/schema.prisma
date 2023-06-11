@@ -114,6 +114,7 @@ model Build {
   projectId        Int
   buildType        BuildType
   status           BuildStatus @default(PENDING)
+  statusMessage    String?
   userInput        String?
   gptModel         String?
   gitwitVersion    String?
