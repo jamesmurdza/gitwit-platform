@@ -118,9 +118,11 @@ model Build {
   gptModel         String?
   gitwitVersion    String?
   buildLog         String?
+  buildPlan        String?
   buildError       String?
   buildScript      String?
   completionId     String?
+  planCompletionId String?
   baseImage        String?
   outputGitURL     String?
   outputHTMLURL    String?
