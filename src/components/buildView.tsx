@@ -16,7 +16,7 @@ export function BuildLoadingView({ build }) {
           {build.status === BuildStatus.RUNNING ? "Build in progress" : "Build in queue"}
         </h3>
         <div className="mt-2 text-sm text-gray-500">
-          <p>Your repository is being generated. This should take less than two minutes.</p>
+          <p>{build.statusMessage ?? "..."}</p>
         </div>
         <div className="mt-5 flex justify-center">
           <BarLoader />

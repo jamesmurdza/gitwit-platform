@@ -52,6 +52,7 @@ export default resolver.pipe(
         id: true,
         outputHTMLURL: true,
         status: true,
+        statusMessage: true,
         buildType: true,
         buildError: true,
         projectId: true,

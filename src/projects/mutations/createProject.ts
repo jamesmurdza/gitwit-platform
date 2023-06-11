@@ -47,6 +47,7 @@ export default resolver.pipe(
         userInput: input.description,
         buildType: input.template ? BuildType.TEMPLATE : BuildType.REPOSITORY,
         status: BuildStatus.RUNNING,
+        statusMessage: "Creating project...",
         ...(templateGitURL && { templateGitURL }),
       }
     });

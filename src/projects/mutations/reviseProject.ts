@@ -53,6 +53,7 @@ export default resolver.pipe(
         userInput: input.description,
         buildType: BuildType.BRANCH,
         status: BuildStatus.RUNNING,
+        statusMessage: "Analyzing project...",
         parentVersionId: parent.id,
       }
     });

@@ -55,6 +55,7 @@ export default resolver.pipe(
         isInitialVersion: failedBuild.isInitialVersion,
         templateGitURL: failedBuild.templateGitURL,
         status: BuildStatus.RUNNING,
+        statusMessage: "Restarting build...",
       }
     });
     await runBuildQueue.enqueue(build.id)
