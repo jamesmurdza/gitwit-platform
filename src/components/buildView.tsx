@@ -5,7 +5,7 @@ import router from "next/router"
 
 import { BarLoader } from "react-spinners"
 
-import { BuildStatus } from "@prisma/client"
+import { BuildType, BuildStatus } from "@prisma/client"
 
 // Loading panel when the build is in progress.
 export function BuildLoadingView({ build }) {
@@ -59,6 +59,31 @@ export function BuildFailedView({ build }) {
 }
 
 // New revision panel when the build succeeded.
+export function InstructionsView({ build }) {
+  const isInitialBuild =
+    build.buildType === BuildType.TEMPLATE || build.buildType === BuildType.REPOSITORY
+  return build && build.status == BuildStatus.SUCCESS ? (
+    <div className="rounded-md bg-yellow-50 p-3 mb-6">
+      <div className="flex">
+        <div className="flex-shrink-0"></div>
+        <div className="ml-3">
+          <div className="text-sm text-yellow-700">
+            <p className="text-yellow-900">
+              {isInitialBuild ? "Copy the project locally:" : "Update your local copy:"}
+              <span className="ml-1 font-mono text-xs px-1 py-1 select-all">
+                {isInitialBuild ? `git clone ${build.outputHTMLURL}` : "git pull"}
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <></>
+  )
+}
+
+// New revision panel when the build succeeded.
 export function NewRevisionView({ build }) {
   return build && build.status == BuildStatus.SUCCESS ? (
     <div className="bg-gray-50 sm:rounded-lg mb-12 border-solid">
@@ -95,6 +120,7 @@ export function BuildStatusView({ build }) {
     <>
       <BuildLoadingView build={build} />
       <BuildFailedView build={build} />
+      <InstructionsView build={build} />
       <NewRevisionView build={build} />
     </>
   )
