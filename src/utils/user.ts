@@ -1,17 +1,22 @@
 import { Ctx } from 'blitz';
 import db, { GitHubUser } from "db"
 
-// This makes an authenticated request to the GitHub API.
-export const queryGitHub = async (ctx: Ctx, url: string, token?: string) => {
+// Get the GitHub OAuth token for the logged in user.
+export const getGitHubToken = (ctx: Ctx) => {
   const session: any = ctx.session;
   const supabaseCookie = session._req.cookies["supabase-auth-token"];
   if (supabaseCookie === undefined) throw new Error("Supabase cookie not found");
-  const userToken = JSON.parse(supabaseCookie)[2];
+  return JSON.parse(supabaseCookie)[2];
+}
+
+// This makes an authenticated request to the GitHub API.
+export const queryGitHub = async (url: string, token: string, method = "GET") => {
   const response = (
     await fetch(url, {
       headers: {
-        Authorization: `Bearer ${token || userToken}`,
+        Authorization: `Bearer ${token}`,
       },
+      method
     })
   ).json();
   return response;
@@ -19,7 +24,7 @@ export const queryGitHub = async (ctx: Ctx, url: string, token?: string) => {
 
 // This returns the GitHub user data for the signed in user.
 export const getUserData = async (ctx: Ctx) => {
-  return await queryGitHub(ctx, "https://api.github.com/user");
+  return await queryGitHub("https://api.github.com/user", getGitHubToken(ctx));
 }
 
 // This creates the user with the given GitHub username if it doesn't exist, and returns the user.

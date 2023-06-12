@@ -37,7 +37,6 @@ export default resolver.pipe(
 
     // Because this repo is in an organization, the API needs to be accessed by an organization member.
     const project = await queryGitHub(
-      ctx,
       `https://api.github.com/repos/${repositoryUsername}/${repositoryName}/git/trees/${branchName}?recursive=1`,
       process.env.GITHUB_TOKEN!
     )
