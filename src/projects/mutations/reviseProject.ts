@@ -57,7 +57,7 @@ export default resolver.pipe(
         parentVersionId: parent.id,
       }
     });
-    await runBuildQueue.enqueue(build.id)
+    await runBuildQueue.enqueue({ buildId: build.id })
 
     return build;
   }

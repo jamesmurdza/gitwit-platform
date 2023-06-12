@@ -6,6 +6,7 @@ export const GitHubLoginButton = () => {
       provider: "github",
       options: {
         redirectTo: window.location.href,
+        scopes: "repo:invite",
       },
     })
     if (error) {

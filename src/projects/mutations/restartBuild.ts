@@ -2,7 +2,7 @@ import { resolver } from "@blitzjs/rpc";
 import db from "db";
 import { z } from "zod";
 import runBuildQueue from "src/pages/api/runBuild"
-import { getUser, verifyUser, rateLimitUser } from "src/utils/user";
+import { getUser, verifyUser, rateLimitUser, getGitHubToken } from "src/utils/user";
 
 import { BuildStatus } from "@prisma/client";
 
@@ -58,7 +58,7 @@ export default resolver.pipe(
         statusMessage: "Restarting build...",
       }
     });
-    await runBuildQueue.enqueue(build.id)
+    await runBuildQueue.enqueue({ buildId: build.id, token: getGitHubToken(ctx) })
 
     return build;
   }

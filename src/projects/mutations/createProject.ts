@@ -2,7 +2,7 @@ import { resolver } from "@blitzjs/rpc";
 import db from "db";
 import { z } from "zod";
 import runBuildQueue from "src/pages/api/runBuild"
-import { getUser, verifyUser, rateLimitUser } from "src/utils/user";
+import { getUser, verifyUser, rateLimitUser, getGitHubToken } from "src/utils/user";
 import { BuildType, BuildStatus } from "@prisma/client";
 
 const CreateProject = z.object({
@@ -51,7 +51,7 @@ export default resolver.pipe(
         ...(templateGitURL && { templateGitURL }),
       }
     });
-    await runBuildQueue.enqueue(build.id)
+    await runBuildQueue.enqueue({ buildId: build.id, token: getGitHubToken(ctx) })
 
     return project;
   }

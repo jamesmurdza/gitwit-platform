@@ -18,8 +18,9 @@ export const queryGitHub = async (url: string, token: string, method = "GET") =>
       },
       method
     })
-  ).json();
-  return response;
+  );
+  // Parse the response unless there is no content.
+  return response.status == 204 || response.json();
 }
 
 // This returns the GitHub user data for the signed in user.
