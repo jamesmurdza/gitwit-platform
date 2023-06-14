@@ -1,15 +1,20 @@
-import { useParam } from "@blitzjs/next"
-import { ProjectView } from "src/components/projectView"
-import { useQuery, useMutation } from "@blitzjs/rpc"
+import { ErrorBoundary, useParam } from "@blitzjs/next"
+import { useQuery } from "@blitzjs/rpc"
 
 import getProject from "src/projects/queries/getProject"
 
 import Layout from "src/layouts/layout"
-import { BuildLoadingView, BuildFailedView } from "src/components/buildView"
 
-import { ErrorBoundary } from "@blitzjs/next"
+import { ProjectView } from "src/components/projectView"
+import { BuildLoadingView, BuildFailedView } from "src/components/buildView"
 import { DiffView } from "src/components/diffView"
+import LogsView from "src/components/logsView"
 import AcceptChangesBar from "src/components/acceptChangesBar"
+import TabView from "src/components/tabView"
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCodeCompare } from "@fortawesome/free-solid-svg-icons"
+import { Bars4Icon } from "@heroicons/react/24/outline"
 
 import "react-diff-view/style/index.css"
 
@@ -23,7 +28,9 @@ export default function VersionPage() {
   )
 }
 
+// Show details of a revision and allow the user to accept changes.
 function VersionView() {
+  // Read the URL parameters
   const idParam = useParam("id")
   const id = typeof idParam == "string" ? Number.parseInt(idParam) : undefined
   const versionParam = useParam("versionId")
@@ -40,7 +47,7 @@ function VersionView() {
   return (
     <ProjectView project={project} build={build}>
       <ErrorBoundary FallbackComponent={ohNo}>
-        <div className="w-full mt-4">
+        <div className="w-full mt-5">
           <BuildLoadingView build={build} />
           <BuildFailedView build={build} />
           {
@@ -48,7 +55,31 @@ function VersionView() {
             build?.outputHTMLURL && !build.merged && (
               <>
                 <AcceptChangesBar build={build} />
-                <DiffView buildId={versionId!} />
+                <TabView
+                  title={build.userInput}
+                  tabs={[
+                    {
+                      id: 0,
+                      label: (
+                        <>
+                          <FontAwesomeIcon icon={faCodeCompare} className="mr-1" />
+                          Changes
+                        </>
+                      ),
+                      view: <DiffView buildId={versionId!} />,
+                    },
+                    {
+                      id: 1,
+                      label: (
+                        <>
+                          <Bars4Icon className="h-[19px] w-[19px] mt-[-2px] mr-[4px] inline-block" />
+                          Logs
+                        </>
+                      ),
+                      view: <LogsView build={build} />,
+                    },
+                  ]}
+                />
               </>
             )
           }

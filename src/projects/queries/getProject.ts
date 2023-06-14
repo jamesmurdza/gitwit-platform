@@ -55,6 +55,7 @@ export default resolver.pipe(
         statusMessage: true,
         buildType: true,
         buildError: true,
+        userInput: true,
         projectId: true,
         parentVersionId: true,
         merged: true

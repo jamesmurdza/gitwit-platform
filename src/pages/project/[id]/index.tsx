@@ -7,20 +7,12 @@ import { useQuery } from "@blitzjs/rpc"
 
 import HistoryTab from "src/components/historyTab"
 import CodeTab from "src/components/codeTab"
-import LogsTab from "src/components/logsTab"
 
 import getProject from "src/projects/queries/getProject"
 
 import Layout from "src/layouts/layout"
 
-import {
-  CodeBracketSquareIcon,
-  ClockIcon,
-  ExclamationTriangleIcon,
-  Bars4Icon,
-} from "@heroicons/react/24/outline"
-
-const isDemo: boolean = !!process.env.NEXT_PUBLIC_DEMO
+import { CodeBracketSquareIcon, ClockIcon } from "@heroicons/react/24/outline"
 
 export default function ProjectPage() {
   return (
@@ -51,10 +43,7 @@ function MainProjectView() {
       current: currentPage === "preview",
     },
     { name: "History", href: "#history", icon: ClockIcon, current: currentPage === "history" },
-    { name: "Logs", href: "#logs", icon: Bars4Icon, current: currentPage === "logs" },
-  ].concat(
-    isDemo ? [{ name: "Logs", href: "#", icon: ExclamationTriangleIcon, current: false }] : []
-  )
+  ]
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -106,8 +95,6 @@ function MainProjectView() {
               setHash("#preview")
             }}
           />
-        ) : hash === "#logs" ? (
-          <LogsTab build={project.build} />
         ) : (
           <CodeTab build={project.build} />
         )}
