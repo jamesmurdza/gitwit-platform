@@ -15,6 +15,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
+// Button to launch a build on an external platform.
 function LaunchButton({ launchURL }) {
   return (
     <Menu as="div" className="relative inline-block text-left">
@@ -58,7 +59,8 @@ function LaunchButton({ launchURL }) {
   )
 }
 
-function ProjectHeader({ project }) {
+// Header bar with project information and links to GitHub.
+function ProjectHeader({ project, build }) {
   const htmlRepositoryURL = project.build?.outputHTMLURL
   const regex = /\/\/github\.com\/([\w-]+)\/([\w-]+)(\/tree\/([\w-]+))?/
   const [, repositoryUsername, repositoryName, , branchNameComponent] =
@@ -97,12 +99,16 @@ function ProjectHeader({ project }) {
           </div>
           <div className="flex items-center gap-x-4 sm:gap-x-6">
             <a
-              href={updatedRepositoryURL!}
+              href={
+                build
+                  ? `https://github.com/${repositoryUsername}/${repositoryName}/pull/main...${branchName}`
+                  : updatedRepositoryURL!
+              }
               className="hidden text-sm font-semibold leading-6 text-gray-900 sm:block"
               target="_blank"
               rel="noreferrer"
             >
-              View code
+              View {build ? "PR" : "on GitHub"}
             </a>
             <LaunchButton
               launchURL={`https://github.com/codespaces/new?repo=${repositoryUsername}/${repositoryName}&ref=${branchName}`}
@@ -147,14 +153,23 @@ function ProjectHeader({ project }) {
   )
 }
 
-export function ProjectView({ project, children }: { project: any; children: any }) {
+// Wrapper for pages using the project header.
+export function ProjectView({
+  project,
+  children,
+  build,
+}: {
+  project: any
+  children: any
+  build?: any
+}) {
   return (
     <>
       <Head>
         <title>{project.repositoryName} | GitWit</title>
       </Head>
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <ProjectHeader project={project} />
+        <ProjectHeader project={project} build={build} />
         <div className="mx-auto max-w-7xl lg:flex lg:gap-x-16 lg:px-8">
           <Suspense fallback={<div className="text-center mt-8">Loading...</div>}>
             {children}

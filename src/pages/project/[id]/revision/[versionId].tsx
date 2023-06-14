@@ -46,7 +46,7 @@ function VersionView() {
   const build = project.build
 
   return (
-    <ProjectView project={project}>
+    <ProjectView project={project} build={build}>
       <ErrorBoundary FallbackComponent={ohNo}>
         <div className="w-full mt-4">
           <BuildLoadingView build={build} />
