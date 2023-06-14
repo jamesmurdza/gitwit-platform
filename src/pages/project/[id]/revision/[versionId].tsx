@@ -52,9 +52,9 @@ function VersionView() {
           <BuildFailedView build={build} />
           {
             // Review changes view when the build succeeded.
-            build?.outputHTMLURL && !build.merged && (
+            build?.outputHTMLURL && (
               <>
-                <AcceptChangesBar build={build} />
+                {!build.merged && <AcceptChangesBar build={build} />}
                 <TabView
                   title={build.userInput}
                   tabs={[
@@ -66,7 +66,7 @@ function VersionView() {
                           Changes
                         </>
                       ),
-                      view: <DiffView buildId={versionId!} />,
+                      view: <DiffView build={build} />,
                     },
                     {
                       id: 1,

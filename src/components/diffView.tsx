@@ -5,6 +5,9 @@ import getDiff from "src/projects/queries/getDiff"
 
 import { Disclosure } from "@headlessui/react"
 import { ChevronUpIcon } from "@heroicons/react/20/solid"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons"
+
 import { parseDiff, Diff, Hunk, HunkData } from "react-diff-view"
 
 // A row for showing extra information in the diff view
@@ -89,11 +92,25 @@ export function FileDiffView({ file, comparison }) {
   )
 }
 
-export function DiffView(props) {
-  const [comparison, isLoading] = useQuery(getDiff, { buildId: props.buildId })
+export function DiffView({ build }) {
+  const [comparison, isLoading] = useQuery(getDiff, { buildId: build.id })
+
+  if (build.merged) {
+    return (
+      <>
+        <p className="text-sm">
+          <FontAwesomeIcon
+            title="Changes applied"
+            icon={faCheckCircle}
+            className="text-[16px] text-[#1d7723] mr-2"
+          />
+          Changes from this revision were applied successfully.
+        </p>
+      </>
+    )
+  }
 
   return (
-    props.buildId &&
     comparison.files &&
     comparison.files.map((file) => (
       <FileDiffView file={file} comparison={comparison} key={file.sha} />

@@ -95,7 +95,7 @@ function HistoryTable({ projectId }) {
 
   // A link to the revision details page.
   const VersionRef = ({ version, children }) => {
-    return version.changesApplied ? (
+    return version.buildType == BuildType.TEMPLATE ? (
       children
     ) : (
       <a href={`/project/${projectId}/revision/${version.id}`}>{children}</a>
