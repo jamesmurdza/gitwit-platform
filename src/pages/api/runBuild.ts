@@ -7,7 +7,7 @@ import { BuildType, BuildStatus } from "@prisma/client"
 
 import { acceptGitHubInvite } from "src/utils/github"
 
-export default Queue("api/runBuild", async ({ buildId, token }: { buildId: number, token: string }) => {
+export default Queue("api/runBuild", async ({ buildId, token }: { buildId: number, token?: string }) => {
 
   const build = await db.build.findFirst({
     where: { id: buildId },
@@ -102,7 +102,7 @@ export default Queue("api/runBuild", async ({ buildId, token }: { buildId: numbe
       })
 
       const isInitialVersion = build.buildType === BuildType.TEMPLATE || build.buildType === BuildType.REPOSITORY
-      if (finished && isInitialVersion) {
+      if (finished && token && isInitialVersion) {
         await acceptGitHubInvite(token, outputHTMLURL)
       }
     }
